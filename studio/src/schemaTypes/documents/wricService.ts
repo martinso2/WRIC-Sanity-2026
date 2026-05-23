@@ -7,8 +7,10 @@ export const wricService = defineType({
   fields: [
     defineField({
       name: 'title',
-      title: 'Title',
+      title: 'Service Name',
       type: 'string',
+      readOnly: true,
+      description: 'Contact your developer to rename a service.',
       validation: (r) => r.required(),
     }),
     defineField({
@@ -22,54 +24,41 @@ export const wricService = defineType({
     defineField({
       name: 'details',
       title: 'Detail Bullets',
-      description: 'Shown in the expanded service view',
+      description: 'Each bullet appears in the expanded service view',
       type: 'array',
       of: [{type: 'string'}],
     }),
+    // Developer-only fields — hidden from client view
     defineField({
       name: 'actionLabel',
       title: 'CTA Button Label',
       type: 'string',
+      hidden: true,
     }),
     defineField({
       name: 'modalId',
       title: 'Modal to Open',
       type: 'string',
-      options: {
-        list: [
-          {title: 'Intake / Get Started', value: 'intake'},
-          {title: 'Contact', value: 'contact'},
-        ],
-      },
+      hidden: true,
     }),
     defineField({
       name: 'tags',
       title: 'Tags',
-      description: 'Short chips shown on the card (e.g. "Job search", "ESL")',
       type: 'array',
       of: [{type: 'string'}],
+      hidden: true,
     }),
     defineField({
       name: 'image',
       title: 'Image',
       type: 'image',
-      options: {
-        hotspot: true,
-        aiAssist: {imageDescriptionField: 'alt'},
-      },
-      fields: [
-        defineField({
-          name: 'alt',
-          title: 'Alt text',
-          type: 'string',
-        }),
-      ],
+      hidden: true,
     }),
     defineField({
       name: 'order',
       title: 'Display Order',
       type: 'number',
-      description: 'Lower numbers appear first',
+      hidden: true,
     }),
   ],
   orderings: [

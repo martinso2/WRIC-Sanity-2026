@@ -17,7 +17,13 @@ import {
   type ServiceCard,
   type ModalContent
 } from "@/app/data/wric-content";
+import { staffMembers as staticStaffMembers } from "@/app/data/wric-team";
 import type { StaffMember, BoardMember } from "@/app/data/wric-team";
+
+// Local image fallback lookup keyed by name
+const staticImageByName = new Map(
+  staticStaffMembers.map(m => [m.name.toLowerCase().trim(), m.image])
+);
 
 type SanitySettings = {
   orgName?: string | null
@@ -173,7 +179,7 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
         name: s.name,
         title: s.title ?? '',
         email: s.email ?? undefined,
-        image: s.image ?? undefined,
+        image: s.image ?? staticImageByName.get(s.name.toLowerCase().trim()) ?? undefined,
         featured: s.featured ?? false,
       }))
     : undefined as unknown as StaffMember[]
@@ -492,9 +498,14 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
               </div>
 
               <div className="services-grid">
-                {activeServices.map((service) => {
+                {activeServices.map((service, serviceIndex) => {
                   const imageSrc = serviceImages[service.title];
-                  const layoutClass = serviceLayoutClasses[service.title] ?? "standard";
+                  const layoutClass =
+                    serviceIndex === 0
+                      ? "showcase"
+                      : serviceIndex % 2 === 1
+                      ? "right-image-showcase"
+                      : "left-image-showcase";
 
                   return (
                     <article

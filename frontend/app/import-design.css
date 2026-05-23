@@ -187,7 +187,7 @@ p {
   padding-right: var(--gutter);
 }
 
-.imported-site section {
+.imported-site main > section {
   padding: var(--section-y) 0;
   position: relative;
 }
