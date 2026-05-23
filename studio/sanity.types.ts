@@ -15,118 +15,6 @@
 export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: ../sanity.schema.json
-export type PageReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'page'
-}
-
-export type PostReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'post'
-}
-
-export type Link = {
-  _type: 'link'
-  linkType?: 'href' | 'page' | 'post'
-  href?: string
-  page?: PageReference
-  post?: PostReference
-  openInNewTab?: boolean
-}
-
-export type SanityImageAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-}
-
-export type CallToAction = {
-  _type: 'callToAction'
-  eyebrow?: string
-  heading: string
-  body?: BlockContentTextOnly
-  button?: Button
-  image?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: 'image'
-  }
-  theme?: 'light' | 'dark'
-  contentAlignment?: 'textFirst' | 'imageFirst'
-}
-
-export type InfoSection = {
-  _type: 'infoSection'
-  heading?: string
-  subheading?: string
-  content?: BlockContent
-}
-
-export type BlockContentTextOnly = Array<{
-  children?: Array<{
-    marks?: Array<string>
-    text?: string
-    _type: 'span'
-    _key: string
-  }>
-  style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
-  listItem?: 'bullet' | 'number'
-  markDefs?: Array<{
-    href?: string
-    _type: 'link'
-    _key: string
-  }>
-  level?: number
-  _type: 'block'
-  _key: string
-}>
-
-export type BlockContent = Array<
-  | {
-      children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
-      listItem?: 'bullet' | 'number'
-      markDefs?: Array<{
-        linkType?: 'href' | 'page' | 'post'
-        href?: string
-        page?: PageReference
-        post?: PostReference
-        openInNewTab?: boolean
-        _type: 'link'
-        _key: string
-      }>
-      level?: number
-      _type: 'block'
-      _key: string
-    }
-  | {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      _type: 'image'
-      _key: string
-    }
->
-
-export type Button = {
-  _type: 'button'
-  buttonText?: string
-  link?: Link
-}
-
 export type WricVideo = {
   _id: string
   _type: 'wricVideo'
@@ -143,43 +31,6 @@ export type WricVideo = {
   sourcePage?: string
 }
 
-export type WricTimelineMilestone = {
-  _id: string
-  _type: 'wricTimelineMilestone'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  year: string
-  title: string
-  body?: string
-  image?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  accent?: 'blue' | 'coral' | 'teal' | 'sage'
-  order?: number
-}
-
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop'
-  top: number
-  bottom: number
-  left: number
-  right: number
-}
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot'
-  x: number
-  y: number
-  height: number
-  width: number
-}
-
 export type WricBoardMember = {
   _id: string
   _type: 'wricBoardMember'
@@ -190,6 +41,13 @@ export type WricBoardMember = {
   role?: string
   isEmeritus?: boolean
   order?: number
+}
+
+export type SanityImageAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
 }
 
 export type WricStaffMember = {
@@ -213,6 +71,22 @@ export type WricStaffMember = {
   order?: number
 }
 
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop'
+  top: number
+  bottom: number
+  left: number
+  right: number
+}
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot'
+  x: number
+  y: number
+  height: number
+  width: number
+}
+
 export type WricService = {
   _id: string
   _type: 'wricService'
@@ -223,7 +97,7 @@ export type WricService = {
   summary: string
   details?: Array<string>
   actionLabel?: string
-  modalId?: 'intake' | 'contact'
+  modalId?: string
   tags?: Array<string>
   image?: {
     asset?: SanityImageAssetReference
@@ -242,12 +116,6 @@ export type WricSettings = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  orgName: string
-  tagline?: string
-  missionStatement?: string
-  heroLede?: string
-  heroStat?: string
-  heroStatLabel?: string
   phone?: string
   phoneSpanish?: string
   email?: string
@@ -255,13 +123,7 @@ export type WricSettings = {
   hours?: string
   spanishHoursNote?: string
   taxNote?: string
-  donateUrl?: string
-  volunteerUrl?: string
-  orientationUrl?: string
-  clientPortalUrl?: string
-  facebookUrl?: string
-  instagramUrl?: string
-  linkedinUrl?: string
+  galaVisible?: boolean
   galaTitle?: string
   galaBody?: string
   galaImage?: {
@@ -271,120 +133,19 @@ export type WricSettings = {
     crop?: SanityImageCrop
     _type: 'image'
   }
-  galaVisible?: boolean
-}
-
-export type Settings = {
-  _id: string
-  _type: 'settings'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  description?: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal'
-    listItem?: never
-    markDefs?: Array<{
-      linkType?: 'href' | 'page' | 'post'
-      href?: string
-      page?: PageReference
-      post?: PostReference
-      openInNewTab?: boolean
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
-    _key: string
-  }>
-  ogImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    metadataBase?: string
-    _type: 'image'
-  }
-}
-
-export type Page = {
-  _id: string
-  _type: 'page'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name: string
-  slug: Slug
-  heading: string
-  subheading?: string
-  pageBuilder?: Array<
-    | ({
-        _key: string
-      } & CallToAction)
-    | ({
-        _key: string
-      } & InfoSection)
-  >
-}
-
-export type PersonReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'person'
-}
-
-export type Post = {
-  _id: string
-  _type: 'post'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  slug: Slug
-  content?: BlockContent
-  excerpt?: string
-  coverImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  date?: string
-  author?: PersonReference
-}
-
-export type Person = {
-  _id: string
-  _type: 'person'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  firstName: string
-  lastName: string
-  picture: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-}
-
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
+  missionStatement?: string
+  heroStat?: string
+  heroStatLabel?: string
+  heroLede?: string
+  facebookUrl?: string
+  instagramUrl?: string
+  linkedinUrl?: string
+  donateUrl?: string
+  volunteerUrl?: string
+  orientationUrl?: string
+  clientPortalUrl?: string
+  orgName?: string
+  tagline?: string
 }
 
 export type SanityAssistInstructionTask = {
@@ -621,30 +382,21 @@ export type Geopoint = {
   alt?: number
 }
 
+export type Slug = {
+  _type: 'slug'
+  current: string
+  source?: string
+}
+
 export type AllSanitySchemaTypes =
-  | PageReference
-  | PostReference
-  | Link
-  | SanityImageAssetReference
-  | CallToAction
-  | InfoSection
-  | BlockContentTextOnly
-  | BlockContent
-  | Button
   | WricVideo
-  | WricTimelineMilestone
+  | WricBoardMember
+  | SanityImageAssetReference
+  | WricStaffMember
   | SanityImageCrop
   | SanityImageHotspot
-  | WricBoardMember
-  | WricStaffMember
   | WricService
   | WricSettings
-  | Settings
-  | Page
-  | PersonReference
-  | Post
-  | Person
-  | Slug
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations
@@ -666,3 +418,4 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint
+  | Slug

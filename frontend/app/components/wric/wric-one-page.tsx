@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { vercelStegaClean as stegaClean } from "@vercel/stega";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { WricHistoryTimeline } from "@/app/components/wric/wric-history-timeline";
 import { WricTeamSection } from "@/app/components/wric/wric-team-section";
@@ -59,6 +60,8 @@ type SanityService = {
   actionLabel?: string | null
   modalId?: string | null
   tags?: string[] | null
+  image?: string | null
+  imageAlt?: string | null
 }
 
 type SanityStaff = {
@@ -499,7 +502,8 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
 
               <div className="services-grid">
                 {activeServices.map((service, serviceIndex) => {
-                  const imageSrc = serviceImages[service.title];
+                  const imageSrc = stegaClean((service as SanityService).image) ?? serviceImages[stegaClean(service.title)];
+                  const imageAlt = stegaClean((service as SanityService).imageAlt) ?? serviceImageAlts[stegaClean(service.title)] ?? stegaClean(service.title);
                   const layoutClass =
                     serviceIndex === 0
                       ? "showcase"
@@ -515,7 +519,7 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                       <div className="service-img">
                         {imageSrc ? (
                           <Image
-                            alt={serviceImageAlts[service.title] ?? service.title}
+                            alt={imageAlt}
                             fill
                             sizes="(min-width: 900px) 42vw, 100vw"
                             src={imageSrc}

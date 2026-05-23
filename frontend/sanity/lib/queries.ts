@@ -107,7 +107,9 @@ export const wricSettingsQuery = defineQuery(`
 
 export const wricServicesQuery = defineQuery(`
   *[_type == "wricService"] | order(order asc) {
-    _id, title, summary, details, actionLabel, modalId, tags
+    _id, title, summary, details, actionLabel, modalId, tags,
+    "image": image.asset->url,
+    "imageAlt": image.alt
   }
 `)
 

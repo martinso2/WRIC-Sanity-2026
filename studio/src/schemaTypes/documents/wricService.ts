@@ -50,9 +50,13 @@ export const wricService = defineType({
     }),
     defineField({
       name: 'image',
-      title: 'Image',
+      title: 'Service Image',
+      description: 'Photo or illustration shown on the service card',
       type: 'image',
-      hidden: true,
+      options: {hotspot: true},
+      fields: [
+        defineField({name: 'alt', title: 'Alt text', type: 'string'}),
+      ],
     }),
     defineField({
       name: 'order',
