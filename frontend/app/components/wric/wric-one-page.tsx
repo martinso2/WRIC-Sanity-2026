@@ -1,0 +1,803 @@
+"use client";
+
+import Image from "next/image";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { WricHistoryTimeline } from "@/app/components/wric/wric-history-timeline";
+import { WricTeamSection } from "@/app/components/wric/wric-team-section";
+import { Modal } from "@/app/components/wric/modal";
+import { GoogleTranslate } from "@/app/components/wric/google-translate";
+import { socialLinks } from "@/app/data/wric-social-links";
+import {
+  contactDetails,
+  galaMessage,
+  missionStatement,
+  modalContent,
+  serviceCards,
+  supportCards,
+  type ServiceCard,
+  type ModalContent
+} from "@/app/data/wric-content";
+import type { StaffMember, BoardMember } from "@/app/data/wric-team";
+
+type SanitySettings = {
+  orgName?: string | null
+  tagline?: string | null
+  missionStatement?: string | null
+  heroLede?: string | null
+  heroStat?: string | null
+  heroStatLabel?: string | null
+  phone?: string | null
+  phoneSpanish?: string | null
+  email?: string | null
+  address?: string | null
+  hours?: string | null
+  spanishHoursNote?: string | null
+  taxNote?: string | null
+  donateUrl?: string | null
+  volunteerUrl?: string | null
+  orientationUrl?: string | null
+  clientPortalUrl?: string | null
+  facebookUrl?: string | null
+  instagramUrl?: string | null
+  linkedinUrl?: string | null
+  galaTitle?: string | null
+  galaBody?: string | null
+  galaVisible?: boolean | null
+} | null
+
+type SanityService = {
+  _id: string
+  title: string
+  summary: string
+  details?: string[] | null
+  actionLabel?: string | null
+  modalId?: string | null
+  tags?: string[] | null
+}
+
+type SanityStaff = {
+  _id: string
+  name: string
+  title?: string | null
+  email?: string | null
+  featured?: boolean | null
+  image?: string | null
+}
+
+type SanityBoard = {
+  _id: string
+  name: string
+  role?: string | null
+  isEmeritus?: boolean | null
+}
+
+type Props = {
+  sanitySettings?: SanitySettings
+  sanityServices?: SanityService[]
+  sanityStaff?: SanityStaff[]
+  sanityBoard?: SanityBoard[]
+}
+
+const importedImages = {
+  logo: "/images/logo/wric-logo-building-transparent.png",
+  hero: "/images/hero/blue-silhouettes-right.jpeg",
+  gala: "/images/events/2026-gala-celebration.jpg",
+  career: "/images/services/career-services-classroom.jpg",
+  housing: "/images/services/housing.jpeg",
+  support: "/images/services/support.jpeg",
+  victim: "/images/services/victim-services-2.jpg",
+  domestic: "/images/services/domestic-violence.jpeg",
+  trafficking: "/images/services/sex-traffic.jpeg",
+  wellness: "/images/services/wellness-2.jpeg"
+};
+
+const serviceImages: Partial<Record<string, string>> = {
+  "Career Services": importedImages.career,
+  Housing: importedImages.housing,
+  "Supportive Services": importedImages.support,
+  "Victim Services": importedImages.victim,
+  "Domestic Violence Support": importedImages.domestic,
+  "Human Trafficking Support": importedImages.trafficking,
+  "Wellness & Trauma Support": importedImages.wellness
+};
+
+const serviceImageAlts: Partial<Record<string, string>> = {
+  "Career Services": "Career services workshop",
+  Housing: "Illustration of a path toward stable housing",
+  "Supportive Services": "Women gathered in conversation for supportive services",
+  "Victim Services": "WRIC advocacy event for financial abuse awareness",
+  "Domestic Violence Support": "Illustration of women surrounded by leaves and flowers",
+  "Human Trafficking Support": "Illustration of a woman in profile with layered leaves",
+  "Wellness & Trauma Support": "Creative arts therapy session outdoors"
+};
+
+const serviceLayoutClasses: Partial<Record<string, string>> = {
+  "Career Services": "showcase",
+  Housing: "right-image-showcase",
+  "Supportive Services": "left-image-showcase",
+  "Victim Services": "right-image-showcase",
+  "Domestic Violence Support": "left-image-showcase",
+  "Human Trafficking Support": "right-image-showcase",
+  "Wellness & Trauma Support": "left-image-showcase"
+};
+
+const serviceTags: Record<string, string[]> = {
+  "Career Services": ["Resume help", "ESL", "Citizenship", "Career Closet"],
+  Housing: ["Shared housing", "Prevention", "Counseling"],
+  "Supportive Services": ["Workshops", "Support groups", "Case management"],
+  "Victim Services": ["Confidential", "Legal support", "Safety planning"],
+  "Domestic Violence Support": ["Safety planning", "Shelter referrals"],
+  "Human Trafficking Support": ["Advocacy", "Trauma-informed"],
+  "Wellness & Trauma Support": ["Counseling", "EMDR", "Creative arts"]
+};
+
+const rotatingHeroWords = ["Strength", "Stability", "Success"];
+
+export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = [], sanityBoard = []}: Props = {}) {
+  // Merge Sanity data with static fallbacks
+  const contact = {
+    ...contactDetails,
+    phone: sanitySettings?.phone ?? contactDetails.phone,
+    email: sanitySettings?.email ?? contactDetails.email,
+    address: sanitySettings?.address ?? contactDetails.address,
+    hours: sanitySettings?.hours ?? contactDetails.hours,
+    spanish: sanitySettings?.spanishHoursNote ?? contactDetails.spanish,
+    taxNote: sanitySettings?.taxNote ?? contactDetails.taxNote,
+    phoneHref: `tel:+1${(sanitySettings?.phone ?? contactDetails.phone).replace(/\D/g, '')}`,
+    emailHref: `mailto:${sanitySettings?.email ?? contactDetails.email}`,
+  }
+  const mission = sanitySettings?.missionStatement ?? missionStatement
+  const gala = {
+    title: sanitySettings?.galaTitle ?? galaMessage.title,
+    body: sanitySettings?.galaBody ?? galaMessage.body,
+    actionLabel: galaMessage.actionLabel,
+    modalId: galaMessage.modalId,
+    visible: sanitySettings?.galaVisible ?? true,
+  }
+  const heroStat = sanitySettings?.heroStat ?? '5,200+'
+  const heroStatLabel = sanitySettings?.heroStatLabel ?? 'people supported last year'
+  const heroLede = sanitySettings?.heroLede ?? 'For women and families navigating challenges in their lives.'
+
+  const activeServices: ServiceCard[] = sanityServices.length > 0
+    ? sanityServices.map(s => ({
+        title: s.title,
+        summary: s.summary,
+        details: s.details ?? [],
+        actionLabel: s.actionLabel ?? 'Get started',
+        modalId: s.modalId ?? 'intake',
+      }))
+    : serviceCards
+
+  const activeStaff: StaffMember[] = sanityStaff.length > 0
+    ? sanityStaff.map(s => ({
+        name: s.name,
+        title: s.title ?? '',
+        email: s.email ?? undefined,
+        image: s.image ?? undefined,
+        featured: s.featured ?? false,
+      }))
+    : undefined as unknown as StaffMember[]
+
+  const activeBoard: BoardMember[] = sanityBoard.filter(m => !m.isEmeritus).map(m => ({name: m.name, role: m.role ?? undefined}))
+  const activeEmeriti: BoardMember[] = sanityBoard.filter(m => m.isEmeritus).map(m => ({name: m.name, role: m.role ?? undefined}))
+
+  const [activeModalId, setActiveModalId] = useState<string | null>(null);
+  const [heroWordIndex, setHeroWordIndex] = useState(0);
+  const [isHeroWordTransitioning, setIsHeroWordTransitioning] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const wordTimeoutRef = useRef<number | null>(null);
+  const activeModal = useMemo<ModalContent | null>(
+    () => modalContent.find((modal) => modal.id === activeModalId) ?? null,
+    [activeModalId]
+  );
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setIsHeroWordTransitioning(true);
+
+      wordTimeoutRef.current = window.setTimeout(() => {
+        setHeroWordIndex((currentIndex) =>
+          currentIndex >= rotatingHeroWords.length - 1 ? 0 : currentIndex + 1
+        );
+        setIsHeroWordTransitioning(false);
+      }, 520);
+    }, 3600);
+
+    return () => {
+      window.clearInterval(intervalId);
+
+      if (wordTimeoutRef.current) {
+        window.clearTimeout(wordTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsMobileNavOpen(false);
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  function openModal(modalId: string) {
+    setActiveModalId(modalId);
+  }
+
+  return (
+    <>
+      <div className="imported-site">
+        {/* <div className="utility-bar">
+          <div className="wrap">
+            <span>Englewood, New Jersey - Bergen County</span>
+            <div className="util-links">
+              <span>{contact.hours}</span>
+              <a href="tel:+12014315144">Para asistencia en Espanol - 201.431.5144</a>
+            </div>
+          </div>
+        </div> */}
+
+        <header className="site-header">
+          <div className="wrap">
+            <a className="brand" href="#top" aria-label="WRIC home">
+              <span className="brand-mark">
+                <Image
+                  alt="WRIC building mark"
+                  height={160}
+                  priority
+                  src={importedImages.logo}
+                  width={160}
+                />
+              </span>
+              <span className="brand-name">
+                <span className="nm">Women&apos;s Rights Information Center</span>
+                <span className="sub">Est. 1972 - Englewood, NJ</span>
+              </span>
+            </a>
+            <nav className="nav-primary" aria-label="Primary navigation">
+              <a href="#services">Services</a>
+              <a href="#history">About</a>
+              <a href="#team">Staff &amp; Board</a>
+              <a href="/videos">Videos</a>
+              <a href="#support">Donate</a>
+            </nav>
+            <div className="nav-actions">
+              <div className="nav-social">
+                {socialLinks.map((s) => (
+                  <a key={s.label} href={s.href} aria-label={s.label} className="nav-social-link" rel="noreferrer" target="_blank">
+                    {s.icon}
+                  </a>
+                ))}
+              </div>
+              <GoogleTranslate />
+              <button
+                aria-controls="mobile-nav"
+                aria-expanded={isMobileNavOpen}
+                aria-label={isMobileNavOpen ? "Close menu" : "Open menu"}
+                className="mobile-menu-btn"
+                onClick={() => setIsMobileNavOpen((o) => !o)}
+                type="button"
+              >
+                <span className="burger-bar" />
+                <span className="burger-bar" />
+                <span className="burger-bar" />
+              </button>
+            </div>
+          </div>
+
+          {isMobileNavOpen && (
+            <nav
+              aria-label="Mobile navigation"
+              className="mobile-nav"
+              id="mobile-nav"
+            >
+              <a href="#services" onClick={() => setIsMobileNavOpen(false)}>Services</a>
+              <a href="#history" onClick={() => setIsMobileNavOpen(false)}>About</a>
+              <a href="#team" onClick={() => setIsMobileNavOpen(false)}>Staff &amp; Board</a>
+              <a href="/videos" onClick={() => setIsMobileNavOpen(false)}>Videos</a>
+              <a href="#support" onClick={() => setIsMobileNavOpen(false)}>Donate</a>
+              <div className="mobile-nav-translate">
+                <GoogleTranslate />
+              </div>
+              <div className="mobile-nav-social">
+                {socialLinks.map((s) => (
+                  <a key={s.label} href={s.href} aria-label={s.label} className="nav-social-link" rel="noreferrer" target="_blank">
+                    {s.icon}
+                  </a>
+                ))}
+              </div>
+            </nav>
+          )}
+        </header>
+
+        <main id="top">
+          <section className="hero">
+            <div className="hero-bg">
+              <Image
+                alt="Watercolor portraits of women in profile, layered in shades of blue and teal."
+                fill
+                priority
+                sizes="100vw"
+                src={importedImages.hero}
+              />
+            </div>
+            <div className="hero-fade" />
+            <div className="wrap">
+              <div className="hero-copy">
+             
+                <h1 className="display h1">
+                <span className="sub-headline">
+                    For women and families navigating challenges in their lives.
+                  </span>
+                   Safety.
+                  <br />
+                  Support.
+                  <br />
+                  <span
+                    className={`rotating-hero-word ${
+                      isHeroWordTransitioning ? "is-transitioning" : ""
+                    }`}
+                    aria-live="polite"
+                  >
+                    {rotatingHeroWords[heroWordIndex]}.
+                  </span>
+                  {/* <span className="sub-headline">
+                    For women and families navigating challenges in their lives.
+                  </span> */}
+                </h1>
+                <p className="hero-lede">
+                  Career services,
+                  housing support, victim services, and wellness programs.
+                  Safe, confidential, and tailored to your journey.
+                </p>
+                <div className="hero-actions">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => openModal("intake")}
+                    type="button"
+                  >
+                    Get started with us
+                  </button>
+                  {/* <a className="phone-link" href={contact.phoneHref}>
+                    <span className="ico" aria-hidden="true">
+                      phone
+                    </span>
+                    <span>
+                      <strong>{contact.phone}</strong>
+                      <small>Call during business hours</small>
+                    </span>
+                  </a> */}
+                </div>
+              </div>
+              <div className="hero-stat">
+                <div className="num">5,200+</div>
+                <div className="lbl">
+                  people supported by WRIC programs last year across career,
+                  housing, and victim services.
+                </div>
+              </div>
+            </div>
+          </section>
+        
+
+          <div className="quick-strip">
+            <div className="wrap">
+              <a className="cell" href={contact.phoneHref}>
+                <span className="label">Call WRIC</span>
+                <span className="value">{contact.phone}<small>English line</small></span>
+              </a>
+              <a className="cell" href="tel:+12014315144">
+                <span className="label">Espanol</span>
+                <span className="value">201.431.5144<small>Lunes a viernes, 9-5</small></span>
+              </a>
+              <div className="cell">
+                <span className="label">Visit</span>
+                <span className="value">108 W. Palisade Ave.<small>Englewood, NJ 07631</small></span>
+              </div>
+              <div className="cell">
+                <span className="label">Hours</span>
+                <span className="value">Mon-Thu 9-5<small>Fri 9 am - 3 pm</small></span>
+              </div>
+            </div>
+          </div>
+          
+
+          <section className="gala" id="gala" aria-labelledby="gala-title">
+            <div className="wrap">
+              <div className="gala-grid">
+                <div className="gala-media">
+                  <Image
+                    alt="Guests gathered at the 2026 WRIC Gala in front of the Women's Rights Information Center backdrop."
+                    fill
+                    sizes="(min-width: 900px) 46vw, 100vw"
+                    src={importedImages.gala}
+                  />
+                  <span className="gala-tag">2026 Gala - Englewood, NJ</span>
+                  <div className="gala-stat">
+                    <span className="num">Sold out</span>
+                    <span className="lbl">
+                      Thank you to every guest, donor, and sponsor who made the
+                      night possible.
+                    </span>
+                  </div>
+                </div>
+                <div className="gala-copy">
+                  <span className="kicker">Thank you</span>
+                  <h3 className="display h3" id="gala-title">
+                    A fabulous night - for a year of work ahead.
+                  </h3>
+                  <p className="lede gala-lede">{gala.body}</p>
+                  <ul className="gala-list">
+                    <li>Career counseling, ESL, citizenship classes, and Career Closet</li>
+                    <li>Shared Housing matches and homelessness prevention</li>
+                    <li>Confidential survivor advocacy and legal support</li>
+                    <li>Wellness, counseling, EMDR, and creative arts therapy</li>
+                  </ul>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => openModal(gala.modalId)}
+                    type="button"
+                  >
+                    {gala.actionLabel}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+         
+          <section className="mission" id="mission" aria-labelledby="mission-title">
+            <div className="wrap">
+              <div className="mission-grid">
+                <div>
+                  <span className="kicker">Our mission</span>
+                  <h2 className="display h2" id="mission-title">
+                    Knowledge. Opportunity. <em>Dignity.</em>
+                  </h2>
+                  <p className="body">{mission}</p>
+                </div>
+                <div className="mission-side">
+                  <div className="mission-stat">
+                    <div className="num">54 yrs</div>
+                    <div className="label">Serving Bergen County since 1972</div>
+                  </div>
+                  <div className="mission-stat">
+                    <div className="num">7</div>
+                    <div className="label">Core programs, integrated under one roof</div>
+                  </div>
+                  <div className="mission-stat">
+                    <div className="num">$0</div>
+                    <div className="label">Free, low-cost, or subsidized services</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="services" id="services" aria-labelledby="services-title">
+            <div className="wrap">
+              <div className="section-head">
+                <div className="left">
+                  <span className="kicker">What we do</span>
+                  <h2 className="display h2" id="services-title">
+                   All in One Place.
+                  </h2>
+                </div>
+                <div className="right">
+                  <p>
+                    Seven integrated programs, designed to meet people where they are.
+                    Programs are free, low-cost, or subsidized for eligible clients.
+                  </p>
+                </div>
+              </div>
+
+              <div className="services-grid">
+                {activeServices.map((service) => {
+                  const imageSrc = serviceImages[service.title];
+                  const layoutClass = serviceLayoutClasses[service.title] ?? "standard";
+
+                  return (
+                    <article
+                      className={`service-card ${layoutClass}`}
+                      key={service.title}
+                    >
+                      <div className="service-img">
+                        {imageSrc ? (
+                          <Image
+                            alt={serviceImageAlts[service.title] ?? service.title}
+                            fill
+                            sizes="(min-width: 900px) 42vw, 100vw"
+                            src={imageSrc}
+                          />
+                        ) : (
+                          <div className="ph">
+                            <span>{service.title}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="service-body">
+                        <h3>{service.title}</h3>
+                        <p>{service.summary}</p>
+                        <div className="tags">
+                          {(serviceTags[service.title] ?? []).map((tag) => (
+                            <span className="tag" key={tag}>
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="actions">
+                          <button
+                            className="btn-text"
+                            onClick={() => openModal(service.modalId)}
+                            type="button"
+                          >
+                          <span>{service.actionLabel}</span>
+                          <span aria-hidden="true" className="btn-cue">
+                            →
+                          </span>
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+
+
+            </div>
+          </section>
+
+          <section className="paths" id="get-started" aria-labelledby="started-title">
+            <div className="wrap">
+              <div className="section-head">
+                <div className="left">
+                  <span className="kicker">Get started</span>
+                  <h2 className="display h2" id="started-title">
+                    Take the first step.
+                  </h2>
+                </div>
+                <div className="right">
+                  <p>
+                    Three clear paths for new clients, returning clients, and people
+                    who want to learn more before reaching out.
+                  </p>
+                </div>
+              </div>
+              <div className="paths-grid">
+                <div className="paths-media">
+                  <Image
+                    alt="Women walking through open doors as a symbol of taking the first step"
+                    fill
+                    sizes="(min-width: 900px) 50vw, 100vw"
+                    src="/images/misc/first-steps.jpeg"
+                  />
+                </div>
+                {[
+                  ["01", "New client", "Complete the intake form", "A short form helps WRIC understand your situation and route you to the right program.", "intake", "Get started with us"],
+                  ["02", "Learn about services", "Register for virtual orientation", "Live sessions in English and Spanish walk you through WRIC's programs and how to get started.", "orientation", "Register"],
+                  ["03", "Existing client", "Open client program support", "Already enrolled? Use the client portal for ongoing services and program-specific support.", "client-support", "Open portal"]
+                ].map(([num, kicker, title, body, modalId, label]) => (
+                  <article className="path-card" key={num}>
+                    <span className="num">{num}</span>
+                    <span className="kicker">{kicker}</span>
+                    <h3>{title}</h3>
+                    <p>{body}</p>
+                    <div className="cta">
+                      <button
+                        className={num === "01" ? "btn btn-dark" : "btn btn-ghost"}
+                        onClick={() => openModal(modalId)}
+                        type="button"
+                      >
+                        {label}
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <WricHistoryTimeline />
+
+          <WricTeamSection
+            staffMembers={activeStaff}
+            boardMembers={activeBoard}
+            emeritiMembers={activeEmeriti}
+          />
+
+          <section className="support" id="support" aria-labelledby="support-title">
+            <div className="wrap">
+              <div className="section-head">
+                <div className="left">
+                  <span className="kicker">Support WRIC</span>
+                  <h2 className="display h2" id="support-title">
+                    Help keep services <em>available.</em>
+                  </h2>
+                </div>
+                <div className="right">
+                  <p>
+                    Donors and volunteers fund transportation, classes, legal advocacy,
+                    emergency family support, and housing case management.
+                  </p>
+                </div>
+              </div>
+              <div className="support-grid">
+                {supportCards.map((card, index) => (
+                  <article className={`support-card ${index === 0 ? "featured" : ""}`} key={card.title}>
+                    <span className="icon">{index + 1}</span>
+                    <h3>{card.title}</h3>
+                    <p>{card.summary}</p>
+                    <div className="cta">
+                      <button
+                        className="btn-text"
+                        onClick={() => openModal(card.modalId)}
+                        type="button"
+                      >
+                        {card.actionLabel}
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="contact" id="contact" aria-labelledby="contact-title">
+            <div className="wrap">
+              <div className="contact-grid">
+                <div>
+                  <span className="kicker">Contact</span>
+                  <h2 className="display h2" id="contact-title">
+                    Reach Women&apos;s Rights Information Center.
+                  </h2>
+                  <p className="lede">
+                    For services, start with intake or call during business hours.
+                    For general questions, email WRIC. All communication is confidential.
+                  </p>
+                  <div className="contact-list">
+                    <div className="item">
+                      <div className="label">Phone - English</div>
+                      <div className="value"><a href={contact.phoneHref}>{contact.phone}</a></div>
+                      <div className="sub">{contact.hours}</div>
+                    </div>
+                    <div className="item">
+                      <div className="label">Phone - Espanol</div>
+                      <div className="value"><a href="tel:+12014315144">201.431.5144</a></div>
+                      <div className="sub">Lunes a viernes, 9 am - 5 pm</div>
+                    </div>
+                    <div className="item">
+                      <div className="label">Email</div>
+                      <div className="value"><a href={contact.emailHref}>{contact.email}</a></div>
+                    </div>
+                    <div className="item">
+                      <div className="label">Address</div>
+                      <div className="value">{contact.address}</div>
+                    </div>
+                  </div>
+                </div>
+                <aside className="contact-card">
+                  <h3>Need help right now?</h3>
+                  <p>
+                    If you&apos;re in immediate danger, call <strong>911</strong>. For
+                    urgent but non-emergency support, WRIC is here during business hours.
+                  </p>
+                  <div className="row">
+                    <span className="ico" aria-hidden="true">☎</span>
+                    <span className="txt">
+                      <strong>{contact.phone}</strong>
+                      Call WRIC - confidential
+                    </span>
+                  </div>
+                  <div className="row">
+                    <span className="ico" aria-hidden="true">es</span>
+                    <span className="txt">
+                      <strong>Para asistencia en Espanol</strong>
+                      201.431.5144
+                    </span>
+                  </div>
+                  <div className="row">
+                    <span className="ico" aria-hidden="true">↗</span>
+                    <span className="txt">
+                      <strong>After hours</strong>
+                      Use the intake form. WRIC responds next business day.
+                    </span>
+                  </div>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => openModal("intake")}
+                    type="button"
+                  >
+                    Get started with us
+                  </button>
+                </aside>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <footer className="site-footer">
+          <div className="wrap">
+            <div className="top">
+              <div className="brand-block">
+                <div className="brand">
+                  <span className="brand-mark">
+                    <Image
+                      alt=""
+                      height={160}
+                      src={importedImages.logo}
+                      width={160}
+                    />
+                  </span>
+                  <span className="brand-name">
+                    <span className="nm">Women&apos;s Rights Information Center</span>
+                    <span className="sub">Est. 1972 - Englewood, NJ</span>
+                  </span>
+                </div>
+                <p>
+                  A 501(c)(3) nonprofit providing knowledge and opportunities to
+                  support the economic aspirations, self-sufficiency, and emotional
+                  well-being of women, families, and communities in Bergen County.
+                </p>
+              </div>
+              <div>
+                <h5>Services</h5>
+                <ul>
+                  <li><a href="#services">Career Services</a></li>
+                  <li><a href="#services">Housing</a></li>
+                  <li><a href="#services">Victim Services</a></li>
+                  <li><a href="#services">Wellness & Trauma</a></li>
+                  <li><a href="/videos">Video archive</a></li>
+                </ul>
+              </div>
+              <div>
+                <h5>Contact</h5>
+                <ul>
+                  <li><a href={contact.phoneHref}>{contact.phone}</a></li>
+                  <li><a href={contact.emailHref}>Email WRIC</a></li>
+                  <li>{contact.address}</li>
+                </ul>
+              </div>
+              <div>
+                <h5>Legal</h5>
+                <ul>
+                  <li>
+                    <button
+                      className="footer-link-button"
+                      onClick={() => openModal("privacy")}
+                      type="button"
+                    >
+                      Privacy Statement
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="footer-link-button"
+                      onClick={() => openModal("terms")}
+                      type="button"
+                    >
+                      Terms of Use
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="bottom">
+              <span>© 1972-2026 Women&apos;s Rights Information Center</span>
+              <div className="footer-social">
+                {socialLinks.map((s) => (
+                  <a key={s.label} href={s.href} aria-label={s.label} className="footer-social-link" rel="noreferrer" target="_blank">
+                    {s.icon}
+                  </a>
+                ))}
+              </div>
+              <span>{contact.taxNote}</span>
+            </div>
+          </div>
+        </footer>
+
+      </div>
+
+      <Modal modal={activeModal} onClose={() => setActiveModalId(null)} />
+    </>
+  );
+}

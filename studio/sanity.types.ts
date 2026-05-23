@@ -127,6 +127,153 @@ export type Button = {
   link?: Link
 }
 
+export type WricVideo = {
+  _id: string
+  _type: 'wricVideo'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  description?: string
+  provider: 'youtube' | 'vimeo'
+  embedUrl: string
+  externalUrl?: string
+  dateLabel?: string
+  sortDate?: string
+  sourcePage?: string
+}
+
+export type WricTimelineMilestone = {
+  _id: string
+  _type: 'wricTimelineMilestone'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  year: string
+  title: string
+  body?: string
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  accent?: 'blue' | 'coral' | 'teal' | 'sage'
+  order?: number
+}
+
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop'
+  top: number
+  bottom: number
+  left: number
+  right: number
+}
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot'
+  x: number
+  y: number
+  height: number
+  width: number
+}
+
+export type WricBoardMember = {
+  _id: string
+  _type: 'wricBoardMember'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name: string
+  role?: string
+  isEmeritus?: boolean
+  order?: number
+}
+
+export type WricStaffMember = {
+  _id: string
+  _type: 'wricStaffMember'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name: string
+  title?: string
+  email?: string
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  featured?: boolean
+  order?: number
+}
+
+export type WricService = {
+  _id: string
+  _type: 'wricService'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  summary: string
+  details?: Array<string>
+  actionLabel?: string
+  modalId?: 'intake' | 'contact'
+  tags?: Array<string>
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  order?: number
+}
+
+export type WricSettings = {
+  _id: string
+  _type: 'wricSettings'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  orgName: string
+  tagline?: string
+  missionStatement?: string
+  heroLede?: string
+  heroStat?: string
+  heroStatLabel?: string
+  phone?: string
+  phoneSpanish?: string
+  email?: string
+  address?: string
+  hours?: string
+  spanishHoursNote?: string
+  taxNote?: string
+  donateUrl?: string
+  volunteerUrl?: string
+  orientationUrl?: string
+  clientPortalUrl?: string
+  facebookUrl?: string
+  instagramUrl?: string
+  linkedinUrl?: string
+  galaTitle?: string
+  galaBody?: string
+  galaImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  galaVisible?: boolean
+}
+
 export type Settings = {
   _id: string
   _type: 'settings'
@@ -165,22 +312,6 @@ export type Settings = {
     metadataBase?: string
     _type: 'image'
   }
-}
-
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop'
-  top: number
-  bottom: number
-  left: number
-  right: number
-}
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot'
-  x: number
-  y: number
-  height: number
-  width: number
 }
 
 export type Page = {
@@ -500,9 +631,15 @@ export type AllSanitySchemaTypes =
   | BlockContentTextOnly
   | BlockContent
   | Button
-  | Settings
+  | WricVideo
+  | WricTimelineMilestone
   | SanityImageCrop
   | SanityImageHotspot
+  | WricBoardMember
+  | WricStaffMember
+  | WricService
+  | WricSettings
+  | Settings
   | Page
   | PersonReference
   | Post

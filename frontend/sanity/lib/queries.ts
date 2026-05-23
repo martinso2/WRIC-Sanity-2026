@@ -99,3 +99,33 @@ export const pagesSlugs = defineQuery(`
   *[_type == "page" && defined(slug.current)]
   {"slug": slug.current}
 `)
+
+// WRIC queries
+export const wricSettingsQuery = defineQuery(`
+  *[_type == "wricSettings"][0]
+`)
+
+export const wricServicesQuery = defineQuery(`
+  *[_type == "wricService"] | order(order asc) {
+    _id, title, summary, details, actionLabel, modalId, tags
+  }
+`)
+
+export const wricStaffQuery = defineQuery(`
+  *[_type == "wricStaffMember"] | order(order asc) {
+    _id, name, title, email, featured,
+    "image": image.asset->url
+  }
+`)
+
+export const wricBoardQuery = defineQuery(`
+  *[_type == "wricBoardMember"] | order(order asc) {
+    _id, name, role, isEmeritus
+  }
+`)
+
+export const wricVideosQuery = defineQuery(`
+  *[_type == "wricVideo"] | order(sortDate asc) {
+    _id, title, description, provider, embedUrl, externalUrl, dateLabel, sourcePage
+  }
+`)
