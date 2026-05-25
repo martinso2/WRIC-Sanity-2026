@@ -37,7 +37,7 @@ export default defineConfig({
         mainDocuments: defineDocuments([
           {
             route: '/',
-            filter: `_type == "wricSettings" || _type == "wricHero" || _type == "wricMission"`,
+            filter: `_type == "wricSettings" || _type == "wricHero" || _type == "wricMission" || _type == "wricContentSection"`,
           },
         ]),
         locations: {
@@ -55,6 +55,12 @@ export default defineConfig({
             locations: [homeLocation],
             message: 'Controls the Our Mission section on the homepage',
             tone: 'positive',
+          }),
+          wricContentSection: defineLocations({
+            select: {title: 'internalTitle', headline: 'headline'},
+            resolve: (doc) => ({
+              locations: [{title: doc?.title ?? doc?.headline ?? 'Content Section', href: '/'}, homeLocation],
+            }),
           }),
           wricService: defineLocations({
             select: {title: 'title'},
