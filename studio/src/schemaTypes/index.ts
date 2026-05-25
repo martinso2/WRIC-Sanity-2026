@@ -2,6 +2,7 @@ import {wricSettings} from './singletons/wricSettings'
 import {wricHero} from './singletons/wricHero'
 import {wricMission} from './singletons/wricMission'
 import {wricService} from './documents/wricService'
+import {wricContentSection} from './documents/wricContentSection'
 import {wricStaffMember} from './documents/wricStaffMember'
 import {wricBoardMember} from './documents/wricBoardMember'
 import {wricVideo} from './documents/wricVideo'
@@ -15,6 +16,7 @@ export const schemaTypes = [
   wricMission,
   // Documents
   wricService,
+  wricContentSection,
   wricStaffMember,
   wricBoardMember,
   wricVideo,
