@@ -52,9 +52,23 @@ type SanityHero = {
   heroStatLabel?: string | null
   heroCTALabel?: string | null
   heroCTAUrl?: string | null
-  missionStatement?: string | null
   heroImage?: string | null
   heroImageAlt?: string | null
+} | null
+
+type SanityMission = {
+  _id?: string | null
+  _type?: string | null
+  headline1?: string | null
+  headline2?: string | null
+  headline3?: string | null
+  missionStatement?: string | null
+  stat1Num?: string | null
+  stat1Label?: string | null
+  stat2Num?: string | null
+  stat2Label?: string | null
+  stat3Num?: string | null
+  stat3Label?: string | null
 } | null
 
 type SanityService = {
@@ -93,6 +107,7 @@ type SanityBoard = {
 type Props = {
   sanitySettings?: SanitySettings
   sanityHero?: SanityHero
+  sanityMission?: SanityMission
   sanityServices?: SanityService[]
   sanityStaff?: SanityStaff[]
   sanityBoard?: SanityBoard[]
@@ -153,7 +168,7 @@ const serviceTags: Record<string, string[]> = {
 
 const rotatingHeroWords = ["Strength", "Stability", "Success"];
 
-export function WricOnePage({sanitySettings, sanityHero, sanityServices = [], sanityStaff = [], sanityBoard = []}: Props = {}) {
+export function WricOnePage({sanitySettings, sanityHero, sanityMission, sanityServices = [], sanityStaff = [], sanityBoard = []}: Props = {}) {
   // Merge Sanity data with static fallbacks
   const settingsId = stegaClean(sanitySettings?._id) ?? 'wricSettings'
   const settingsType = 'wricSettings'
@@ -170,7 +185,15 @@ export function WricOnePage({sanitySettings, sanityHero, sanityServices = [], sa
     phoneHref: `tel:+1${stegaClean(sanitySettings?.phone ?? contactDetails.phone).replace(/\D/g, '')}`,
     emailHref: `mailto:${stegaClean(sanitySettings?.email ?? contactDetails.email)}`,
   }
-  const mission = sanityHero?.missionStatement ?? missionStatement
+  const missionId = sanityMission?._id ?? 'wricMission'
+  const missionType = 'wricMission'
+  const mission = sanityMission?.missionStatement ?? missionStatement
+  const missionHeadline1 = sanityMission?.headline1 ?? 'Knowledge.'
+  const missionHeadline2 = sanityMission?.headline2 ?? 'Opportunity.'
+  const missionHeadline3 = sanityMission?.headline3 ?? 'Dignity.'
+  const stat1 = { num: sanityMission?.stat1Num ?? '54 yrs', label: sanityMission?.stat1Label ?? 'Serving Bergen County since 1972' }
+  const stat2 = { num: sanityMission?.stat2Num ?? '7', label: sanityMission?.stat2Label ?? 'Core programs, integrated under one roof' }
+  const stat3 = { num: sanityMission?.stat3Num ?? '$0', label: sanityMission?.stat3Label ?? 'Free, low-cost, or subsidized services' }
   const gala = {
     title: sanitySettings?.galaTitle ?? galaMessage.title,
     body: sanitySettings?.galaBody ?? galaMessage.body,
@@ -495,27 +518,29 @@ export function WricOnePage({sanitySettings, sanityHero, sanityServices = [], sa
                 <div>
                   <span className="kicker">Our mission</span>
                   <h2 className="display h2" id="mission-title">
-                    Knowledge. Opportunity. <em>Dignity.</em>
+                    <span {...(missionId ? {'data-sanity': dataAttr({id: missionId, type: missionType, path: 'headline1'}).toString()} : {})}>{missionHeadline1}</span>{' '}
+                    <span {...(missionId ? {'data-sanity': dataAttr({id: missionId, type: missionType, path: 'headline2'}).toString()} : {})}>{missionHeadline2}</span>{' '}
+                    <em {...(missionId ? {'data-sanity': dataAttr({id: missionId, type: missionType, path: 'headline3'}).toString()} : {})}>{missionHeadline3}</em>
                   </h2>
                   <p
                     className="body"
-                    data-sanity={dataAttr({id: heroId, type: heroType, path: 'missionStatement'}).toString()}
+                    {...(missionId ? {'data-sanity': dataAttr({id: missionId, type: missionType, path: 'missionStatement'}).toString()} : {})}
                   >
                     {mission}
                   </p>
                 </div>
                 <div className="mission-side">
                   <div className="mission-stat">
-                    <div className="num">54 yrs</div>
-                    <div className="label">Serving Bergen County since 1972</div>
+                    <div className="num" {...(missionId ? {'data-sanity': dataAttr({id: missionId, type: missionType, path: 'stat1Num'}).toString()} : {})}>{stat1.num}</div>
+                    <div className="label" {...(missionId ? {'data-sanity': dataAttr({id: missionId, type: missionType, path: 'stat1Label'}).toString()} : {})}>{stat1.label}</div>
                   </div>
                   <div className="mission-stat">
-                    <div className="num">7</div>
-                    <div className="label">Core programs, integrated under one roof</div>
+                    <div className="num" {...(missionId ? {'data-sanity': dataAttr({id: missionId, type: missionType, path: 'stat2Num'}).toString()} : {})}>{stat2.num}</div>
+                    <div className="label" {...(missionId ? {'data-sanity': dataAttr({id: missionId, type: missionType, path: 'stat2Label'}).toString()} : {})}>{stat2.label}</div>
                   </div>
                   <div className="mission-stat">
-                    <div className="num">$0</div>
-                    <div className="label">Free, low-cost, or subsidized services</div>
+                    <div className="num" {...(missionId ? {'data-sanity': dataAttr({id: missionId, type: missionType, path: 'stat3Num'}).toString()} : {})}>{stat3.num}</div>
+                    <div className="label" {...(missionId ? {'data-sanity': dataAttr({id: missionId, type: missionType, path: 'stat3Label'}).toString()} : {})}>{stat3.label}</div>
                   </div>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import {wricSettings} from './singletons/wricSettings'
 import {wricHero} from './singletons/wricHero'
+import {wricMission} from './singletons/wricMission'
 import {wricService} from './documents/wricService'
 import {wricStaffMember} from './documents/wricStaffMember'
 import {wricBoardMember} from './documents/wricBoardMember'
@@ -11,6 +12,7 @@ export const schemaTypes = [
   // Singletons
   wricSettings,
   wricHero,
+  wricMission,
   // Documents
   wricService,
   wricStaffMember,

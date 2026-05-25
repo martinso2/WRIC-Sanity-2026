@@ -116,9 +116,17 @@ export const wricHeroQuery = defineQuery(`
   *[_type == "wricHero"][0]{
     _id, _type,
     heroSubheadline, heroLede, heroStat, heroStatLabel,
-    heroCTALabel, heroCTAUrl, missionStatement,
+    heroCTALabel, heroCTAUrl,
     "heroImage": heroImage.asset->url,
     "heroImageAlt": heroImage.alt
+  }
+`)
+
+export const wricMissionQuery = defineQuery(`
+  *[_type == "wricMission"][0]{
+    _id, _type,
+    headline1, headline2, headline3, missionStatement,
+    stat1Num, stat1Label, stat2Num, stat2Label, stat3Num, stat3Label
   }
 `)
 

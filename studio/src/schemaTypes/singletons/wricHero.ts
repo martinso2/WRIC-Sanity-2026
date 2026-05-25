@@ -55,13 +55,6 @@ export const wricHero = defineType({
       description: 'If filled in, the button goes to this URL instead of opening the intake form. Leave blank to keep the intake form popup.',
       type: 'url',
     }),
-    defineField({
-      name: 'missionStatement',
-      title: 'Mission Statement',
-      description: 'Shown in the "Our Mission" section below the hero',
-      type: 'text',
-      rows: 4,
-    }),
   ],
   preview: {
     prepare() {
