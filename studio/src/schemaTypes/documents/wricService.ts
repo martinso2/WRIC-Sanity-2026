@@ -9,8 +9,7 @@ export const wricService = defineType({
       name: 'title',
       title: 'Service Name',
       type: 'string',
-      readOnly: true,
-      description: 'Contact your developer to rename a service.',
+      description: 'Name of the service as it appears on the website (e.g. "Career Services")',
       validation: (r) => r.required(),
     }),
     defineField({
@@ -28,25 +27,19 @@ export const wricService = defineType({
       type: 'array',
       of: [{type: 'string'}],
     }),
-    // Developer-only fields — hidden from client view
     defineField({
       name: 'actionLabel',
-      title: 'CTA Button Label',
+      title: 'Button Label',
+      description: 'Text on the "call to action" button (e.g. "Get started", "Learn more")',
       type: 'string',
-      hidden: true,
-    }),
-    defineField({
-      name: 'modalId',
-      title: 'Modal to Open',
-      type: 'string',
-      hidden: true,
+      initialValue: 'Get started',
     }),
     defineField({
       name: 'tags',
       title: 'Tags',
+      description: 'Short labels shown under the summary (e.g. "Resume help", "ESL")',
       type: 'array',
       of: [{type: 'string'}],
-      hidden: true,
     }),
     defineField({
       name: 'image',
@@ -61,8 +54,17 @@ export const wricService = defineType({
     defineField({
       name: 'order',
       title: 'Display Order',
+      description: 'Controls the position of this service on the page. Lower numbers appear first.',
       type: 'number',
+      initialValue: 99,
+    }),
+    // Developer-only — connects to the modal popup system
+    defineField({
+      name: 'modalId',
+      title: 'Modal to Open',
+      type: 'string',
       hidden: true,
+      initialValue: 'intake',
     }),
   ],
   orderings: [

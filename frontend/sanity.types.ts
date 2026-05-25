@@ -462,50 +462,41 @@ export type PagesSlugsResult = Array<never>
 
 // Source: sanity/lib/queries.ts
 // Variable: wricSettingsQuery
-// Query: *[_type == "wricSettings"][0]
+// Query: *[_type == "wricSettings"][0]{    _id, _type,    orgName, tagline, missionStatement, heroLede, heroStat, heroStatLabel,    phone, phoneSpanish, email, address, hours, spanishHoursNote, taxNote,    donateUrl, volunteerUrl, orientationUrl, clientPortalUrl,    facebookUrl, instagramUrl, linkedinUrl,    galaTitle, galaBody, galaVisible  }
 export type WricSettingsQueryResult = {
   _id: string
   _type: 'wricSettings'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  phone?: string
-  phoneSpanish?: string
-  email?: string
-  address?: string
-  hours?: string
-  spanishHoursNote?: string
-  taxNote?: string
-  galaVisible?: boolean
-  galaTitle?: string
-  galaBody?: string
-  galaImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: 'image'
-  }
-  missionStatement?: string
-  heroStat?: string
-  heroStatLabel?: string
-  heroLede?: string
-  facebookUrl?: string
-  instagramUrl?: string
-  linkedinUrl?: string
-  donateUrl?: string
-  volunteerUrl?: string
-  orientationUrl?: string
-  clientPortalUrl?: string
-  orgName?: string
-  tagline?: string
+  orgName: string | null
+  tagline: string | null
+  missionStatement: string | null
+  heroLede: string | null
+  heroStat: string | null
+  heroStatLabel: string | null
+  phone: string | null
+  phoneSpanish: string | null
+  email: string | null
+  address: string | null
+  hours: string | null
+  spanishHoursNote: string | null
+  taxNote: string | null
+  donateUrl: string | null
+  volunteerUrl: string | null
+  orientationUrl: string | null
+  clientPortalUrl: string | null
+  facebookUrl: string | null
+  instagramUrl: string | null
+  linkedinUrl: string | null
+  galaTitle: string | null
+  galaBody: string | null
+  galaVisible: boolean | null
 } | null
 
 // Source: sanity/lib/queries.ts
 // Variable: wricServicesQuery
-// Query: *[_type == "wricService"] | order(order asc) {    _id, title, summary, details, actionLabel, modalId, tags,    "image": image.asset->url,    "imageAlt": image.alt  }
+// Query: *[_type == "wricService"] | order(order asc) {    _id, _type, title, summary, details, actionLabel, modalId, tags,    "image": image.asset->url,    "imageAlt": image.alt  }
 export type WricServicesQueryResult = Array<{
   _id: string
+  _type: 'wricService'
   title: string
   summary: string
   details: Array<string> | null
@@ -518,9 +509,10 @@ export type WricServicesQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: wricStaffQuery
-// Query: *[_type == "wricStaffMember"] | order(order asc) {    _id, name, title, email, featured,    "image": image.asset->url  }
+// Query: *[_type == "wricStaffMember"] | order(order asc) {    _id, _type, name, title, email, featured,    "image": image.asset->url  }
 export type WricStaffQueryResult = Array<{
   _id: string
+  _type: 'wricStaffMember'
   name: string
   title: string | null
   email: string | null
@@ -530,9 +522,10 @@ export type WricStaffQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: wricBoardQuery
-// Query: *[_type == "wricBoardMember"] | order(order asc) {    _id, name, role, isEmeritus  }
+// Query: *[_type == "wricBoardMember"] | order(order asc) {    _id, _type, name, role, isEmeritus  }
 export type WricBoardQueryResult = Array<{
   _id: string
+  _type: 'wricBoardMember'
   name: string
   role: string | null
   isEmeritus: boolean | null
@@ -564,10 +557,10 @@ declare module '@sanity/client' {
     '\n  *[_type == "post" && slug.current == $slug] [0] {\n    content[]{\n    ...,\n    markDefs[]{\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n    }\n  },\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': PostQueryResult
     '\n  *[_type == "post" && defined(slug.current)]\n  {"slug": slug.current}\n': PostPagesSlugsResult
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
-    '\n  *[_type == "wricSettings"][0]\n': WricSettingsQueryResult
-    '\n  *[_type == "wricService"] | order(order asc) {\n    _id, title, summary, details, actionLabel, modalId, tags,\n    "image": image.asset->url,\n    "imageAlt": image.alt\n  }\n': WricServicesQueryResult
-    '\n  *[_type == "wricStaffMember"] | order(order asc) {\n    _id, name, title, email, featured,\n    "image": image.asset->url\n  }\n': WricStaffQueryResult
-    '\n  *[_type == "wricBoardMember"] | order(order asc) {\n    _id, name, role, isEmeritus\n  }\n': WricBoardQueryResult
+    '\n  *[_type == "wricSettings"][0]{\n    _id, _type,\n    orgName, tagline, missionStatement, heroLede, heroStat, heroStatLabel,\n    phone, phoneSpanish, email, address, hours, spanishHoursNote, taxNote,\n    donateUrl, volunteerUrl, orientationUrl, clientPortalUrl,\n    facebookUrl, instagramUrl, linkedinUrl,\n    galaTitle, galaBody, galaVisible\n  }\n': WricSettingsQueryResult
+    '\n  *[_type == "wricService"] | order(order asc) {\n    _id, _type, title, summary, details, actionLabel, modalId, tags,\n    "image": image.asset->url,\n    "imageAlt": image.alt\n  }\n': WricServicesQueryResult
+    '\n  *[_type == "wricStaffMember"] | order(order asc) {\n    _id, _type, name, title, email, featured,\n    "image": image.asset->url\n  }\n': WricStaffQueryResult
+    '\n  *[_type == "wricBoardMember"] | order(order asc) {\n    _id, _type, name, role, isEmeritus\n  }\n': WricBoardQueryResult
     '\n  *[_type == "wricVideo"] | order(sortDate asc) {\n    _id, title, description, provider, embedUrl, externalUrl, dateLabel, sourcePage\n  }\n': WricVideosQueryResult
   }
 }

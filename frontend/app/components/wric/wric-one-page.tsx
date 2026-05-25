@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { vercelStegaClean as stegaClean } from "@vercel/stega";
+import { stegaClean } from "@sanity/client/stega";
+import { dataAttr } from "@/sanity/lib/utils";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { WricHistoryTimeline } from "@/app/components/wric/wric-history-timeline";
 import { WricTeamSection } from "@/app/components/wric/wric-team-section";
@@ -18,15 +19,9 @@ import {
   type ServiceCard,
   type ModalContent
 } from "@/app/data/wric-content";
-import { staffMembers as staticStaffMembers } from "@/app/data/wric-team";
-import type { StaffMember, BoardMember } from "@/app/data/wric-team";
-
-// Local image fallback lookup keyed by name
-const staticImageByName = new Map(
-  staticStaffMembers.map(m => [m.name.toLowerCase().trim(), m.image])
-);
-
 type SanitySettings = {
+  _id?: string | null
+  _type?: string | null
   orgName?: string | null
   tagline?: string | null
   missionStatement?: string | null
@@ -54,6 +49,7 @@ type SanitySettings = {
 
 type SanityService = {
   _id: string
+  _type?: string | null
   title: string
   summary: string
   details?: string[] | null
@@ -66,6 +62,7 @@ type SanityService = {
 
 type SanityStaff = {
   _id: string
+  _type?: string | null
   name: string
   title?: string | null
   email?: string | null
@@ -75,6 +72,7 @@ type SanityStaff = {
 
 type SanityBoard = {
   _id: string
+  _type?: string | null
   name: string
   role?: string | null
   isEmeritus?: boolean | null
@@ -144,6 +142,9 @@ const rotatingHeroWords = ["Strength", "Stability", "Success"];
 
 export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = [], sanityBoard = []}: Props = {}) {
   // Merge Sanity data with static fallbacks
+  const settingsId = stegaClean(sanitySettings?._id) ?? 'wricSettings'
+  const settingsType = 'wricSettings'
+
   const contact = {
     ...contactDetails,
     phone: sanitySettings?.phone ?? contactDetails.phone,
@@ -152,8 +153,9 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
     hours: sanitySettings?.hours ?? contactDetails.hours,
     spanish: sanitySettings?.spanishHoursNote ?? contactDetails.spanish,
     taxNote: sanitySettings?.taxNote ?? contactDetails.taxNote,
-    phoneHref: `tel:+1${(sanitySettings?.phone ?? contactDetails.phone).replace(/\D/g, '')}`,
-    emailHref: `mailto:${sanitySettings?.email ?? contactDetails.email}`,
+    phoneSpanish: sanitySettings?.phoneSpanish ?? '201.431.5144',
+    phoneHref: `tel:+1${stegaClean(sanitySettings?.phone ?? contactDetails.phone).replace(/\D/g, '')}`,
+    emailHref: `mailto:${stegaClean(sanitySettings?.email ?? contactDetails.email)}`,
   }
   const mission = sanitySettings?.missionStatement ?? missionStatement
   const gala = {
@@ -164,31 +166,8 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
     visible: sanitySettings?.galaVisible ?? true,
   }
   const heroStat = sanitySettings?.heroStat ?? '5,200+'
-  const heroStatLabel = sanitySettings?.heroStatLabel ?? 'people supported last year'
+  const heroStatLabel = sanitySettings?.heroStatLabel ?? 'people supported by WRIC programs last year across career, housing, and victim services.'
   const heroLede = sanitySettings?.heroLede ?? 'For women and families navigating challenges in their lives.'
-
-  const activeServices: ServiceCard[] = sanityServices.length > 0
-    ? sanityServices.map(s => ({
-        title: s.title,
-        summary: s.summary,
-        details: s.details ?? [],
-        actionLabel: s.actionLabel ?? 'Get started',
-        modalId: s.modalId ?? 'intake',
-      }))
-    : serviceCards
-
-  const activeStaff: StaffMember[] = sanityStaff.length > 0
-    ? sanityStaff.map(s => ({
-        name: s.name,
-        title: s.title ?? '',
-        email: s.email ?? undefined,
-        image: s.image ?? staticImageByName.get(s.name.toLowerCase().trim()) ?? undefined,
-        featured: s.featured ?? false,
-      }))
-    : undefined as unknown as StaffMember[]
-
-  const activeBoard: BoardMember[] = sanityBoard.filter(m => !m.isEmeritus).map(m => ({name: m.name, role: m.role ?? undefined}))
-  const activeEmeriti: BoardMember[] = sanityBoard.filter(m => m.isEmeritus).map(m => ({name: m.name, role: m.role ?? undefined}))
 
   const [activeModalId, setActiveModalId] = useState<string | null>(null);
   const [heroWordIndex, setHeroWordIndex] = useState(0);
@@ -379,10 +358,17 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                 </div>
               </div>
               <div className="hero-stat">
-                <div className="num">5,200+</div>
-                <div className="lbl">
-                  people supported by WRIC programs last year across career,
-                  housing, and victim services.
+                <div
+                  className="num"
+                  data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'heroStat'}).toString()}
+                >
+                  {heroStat}
+                </div>
+                <div
+                  className="lbl"
+                  data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'heroStatLabel'}).toString()}
+                >
+                  {heroStatLabel}
                 </div>
               </div>
             </div>
@@ -391,21 +377,35 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
 
           <div className="quick-strip">
             <div className="wrap">
-              <a className="cell" href={contact.phoneHref}>
+              <a
+                className="cell"
+                href={contact.phoneHref}
+                data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'phone'}).toString()}
+              >
                 <span className="label">Call WRIC</span>
                 <span className="value">{contact.phone}<small>English line</small></span>
               </a>
-              <a className="cell" href="tel:+12014315144">
+              <a
+                className="cell"
+                href={`tel:+1${stegaClean(contact.phoneSpanish).replace(/\D/g, '')}`}
+                data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'phoneSpanish'}).toString()}
+              >
                 <span className="label">Espanol</span>
-                <span className="value">201.431.5144<small>Lunes a viernes, 9-5</small></span>
+                <span className="value">{contact.phoneSpanish}<small>Lunes a viernes, 9-5</small></span>
               </a>
-              <div className="cell">
+              <div
+                className="cell"
+                data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'address'}).toString()}
+              >
                 <span className="label">Visit</span>
-                <span className="value">108 W. Palisade Ave.<small>Englewood, NJ 07631</small></span>
+                <span className="value">{contact.address}</span>
               </div>
-              <div className="cell">
+              <div
+                className="cell"
+                data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'hours'}).toString()}
+              >
                 <span className="label">Hours</span>
-                <span className="value">Mon-Thu 9-5<small>Fri 9 am - 3 pm</small></span>
+                <span className="value">{contact.hours}</span>
               </div>
             </div>
           </div>
@@ -432,10 +432,19 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                 </div>
                 <div className="gala-copy">
                   <span className="kicker">Thank you</span>
-                  <h3 className="display h3" id="gala-title">
-                    A fabulous night - for a year of work ahead.
+                  <h3
+                    className="display h3"
+                    id="gala-title"
+                    data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'galaTitle'}).toString()}
+                  >
+                    {gala.title}
                   </h3>
-                  <p className="lede gala-lede">{gala.body}</p>
+                  <p
+                    className="lede gala-lede"
+                    data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'galaBody'}).toString()}
+                  >
+                    {gala.body}
+                  </p>
                   <ul className="gala-list">
                     <li>Career counseling, ESL, citizenship classes, and Career Closet</li>
                     <li>Shared Housing matches and homelessness prevention</li>
@@ -463,7 +472,12 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                   <h2 className="display h2" id="mission-title">
                     Knowledge. Opportunity. <em>Dignity.</em>
                   </h2>
-                  <p className="body">{mission}</p>
+                  <p
+                    className="body"
+                    data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'missionStatement'}).toString()}
+                  >
+                    {mission}
+                  </p>
                 </div>
                 <div className="mission-side">
                   <div className="mission-stat">
@@ -501,9 +515,10 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
               </div>
 
               <div className="services-grid">
-                {activeServices.map((service, serviceIndex) => {
-                  const imageSrc = stegaClean((service as SanityService).image) ?? serviceImages[stegaClean(service.title)];
-                  const imageAlt = stegaClean((service as SanityService).imageAlt) ?? serviceImageAlts[stegaClean(service.title)] ?? stegaClean(service.title);
+                {(sanityServices.length > 0 ? sanityServices : serviceCards).map((item, serviceIndex) => {
+                  const sanityItem = sanityServices.length > 0 ? item as SanityService : null;
+                  const imageSrc = sanityItem ? stegaClean(sanityItem.image) ?? serviceImages[stegaClean(sanityItem.title)] : serviceImages[item.title];
+                  const imageAlt = sanityItem ? (stegaClean(sanityItem.imageAlt) ?? serviceImageAlts[stegaClean(sanityItem.title)] ?? stegaClean(sanityItem.title)) : (serviceImageAlts[item.title] ?? item.title);
                   const layoutClass =
                     serviceIndex === 0
                       ? "showcase"
@@ -514,7 +529,8 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                   return (
                     <article
                       className={`service-card ${layoutClass}`}
-                      key={service.title}
+                      key={item.title}
+                      {...(sanityItem ? {'data-sanity': dataAttr({id: sanityItem._id, type: 'wricService', path: 'title'}).toString()} : {})}
                     >
                       <div className="service-img">
                         {imageSrc ? (
@@ -526,15 +542,33 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                           />
                         ) : (
                           <div className="ph">
-                            <span>{service.title}</span>
+                            <span>{item.title}</span>
                           </div>
                         )}
                       </div>
                       <div className="service-body">
-                        <h3>{service.title}</h3>
-                        <p>{service.summary}</p>
+                        <h3
+                          {...(sanityItem ? {'data-sanity': dataAttr({id: sanityItem._id, type: 'wricService', path: 'title'}).toString()} : {})}
+                        >
+                          {item.title}
+                        </h3>
+                        <p
+                          {...(sanityItem ? {'data-sanity': dataAttr({id: sanityItem._id, type: 'wricService', path: 'summary'}).toString()} : {})}
+                        >
+                          {item.summary}
+                        </p>
+                        {(sanityItem?.details ?? (item as ServiceCard).details ?? []).length > 0 && (
+                          <ul
+                            className="service-details"
+                            {...(sanityItem ? {'data-sanity': dataAttr({id: sanityItem._id, type: 'wricService', path: 'details'}).toString()} : {})}
+                          >
+                            {(sanityItem?.details ?? (item as ServiceCard).details ?? []).map((bullet, i) => (
+                              <li key={i}>{bullet}</li>
+                            ))}
+                          </ul>
+                        )}
                         <div className="tags">
-                          {(serviceTags[service.title] ?? []).map((tag) => (
+                          {(sanityItem?.tags ?? serviceTags[stegaClean(item.title)] ?? []).map((tag) => (
                             <span className="tag" key={tag}>
                               {tag}
                             </span>
@@ -543,10 +577,10 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                         <div className="actions">
                           <button
                             className="btn-text"
-                            onClick={() => openModal(service.modalId)}
+                            onClick={() => openModal((item as SanityService).modalId ?? (item as ServiceCard).modalId)}
                             type="button"
                           >
-                          <span>{service.actionLabel}</span>
+                          <span>{(item as SanityService).actionLabel ?? (item as ServiceCard).actionLabel}</span>
                           <span aria-hidden="true" className="btn-cue">
                             →
                           </span>
@@ -615,9 +649,8 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
           <WricHistoryTimeline />
 
           <WricTeamSection
-            staffMembers={activeStaff}
-            boardMembers={activeBoard}
-            emeritiMembers={activeEmeriti}
+            sanityStaff={sanityStaff}
+            sanityBoard={sanityBoard}
           />
 
           <section className="support" id="support" aria-labelledby="support-title">
@@ -672,21 +705,52 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                   <div className="contact-list">
                     <div className="item">
                       <div className="label">Phone - English</div>
-                      <div className="value"><a href={contact.phoneHref}>{contact.phone}</a></div>
-                      <div className="sub">{contact.hours}</div>
+                      <div className="value">
+                        <a
+                          href={contact.phoneHref}
+                          data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'phone'}).toString()}
+                        >
+                          {contact.phone}
+                        </a>
+                      </div>
+                      <div
+                        className="sub"
+                        data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'hours'}).toString()}
+                      >
+                        {contact.hours}
+                      </div>
                     </div>
                     <div className="item">
                       <div className="label">Phone - Espanol</div>
-                      <div className="value"><a href="tel:+12014315144">201.431.5144</a></div>
+                      <div className="value">
+                        <a
+                          href={`tel:+1${stegaClean(contact.phoneSpanish).replace(/\D/g, '')}`}
+                          data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'phoneSpanish'}).toString()}
+                        >
+                          {contact.phoneSpanish}
+                        </a>
+                      </div>
                       <div className="sub">Lunes a viernes, 9 am - 5 pm</div>
                     </div>
                     <div className="item">
                       <div className="label">Email</div>
-                      <div className="value"><a href={contact.emailHref}>{contact.email}</a></div>
+                      <div className="value">
+                        <a
+                          href={contact.emailHref}
+                          data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'email'}).toString()}
+                        >
+                          {contact.email}
+                        </a>
+                      </div>
                     </div>
                     <div className="item">
                       <div className="label">Address</div>
-                      <div className="value">{contact.address}</div>
+                      <div
+                        className="value"
+                        data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'address'}).toString()}
+                      >
+                        {contact.address}
+                      </div>
                     </div>
                   </div>
                 </div>

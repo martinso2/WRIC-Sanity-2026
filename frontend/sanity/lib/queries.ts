@@ -102,12 +102,19 @@ export const pagesSlugs = defineQuery(`
 
 // WRIC queries
 export const wricSettingsQuery = defineQuery(`
-  *[_type == "wricSettings"][0]
+  *[_type == "wricSettings"][0]{
+    _id, _type,
+    orgName, tagline, missionStatement, heroLede, heroStat, heroStatLabel,
+    phone, phoneSpanish, email, address, hours, spanishHoursNote, taxNote,
+    donateUrl, volunteerUrl, orientationUrl, clientPortalUrl,
+    facebookUrl, instagramUrl, linkedinUrl,
+    galaTitle, galaBody, galaVisible
+  }
 `)
 
 export const wricServicesQuery = defineQuery(`
   *[_type == "wricService"] | order(order asc) {
-    _id, title, summary, details, actionLabel, modalId, tags,
+    _id, _type, title, summary, details, actionLabel, modalId, tags,
     "image": image.asset->url,
     "imageAlt": image.alt
   }
@@ -115,14 +122,14 @@ export const wricServicesQuery = defineQuery(`
 
 export const wricStaffQuery = defineQuery(`
   *[_type == "wricStaffMember"] | order(order asc) {
-    _id, name, title, email, featured,
+    _id, _type, name, title, email, featured,
     "image": image.asset->url
   }
 `)
 
 export const wricBoardQuery = defineQuery(`
   *[_type == "wricBoardMember"] | order(order asc) {
-    _id, name, role, isEmeritus
+    _id, _type, name, role, isEmeritus
   }
 `)
 

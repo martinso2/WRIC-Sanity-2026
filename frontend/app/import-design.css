@@ -1151,6 +1151,19 @@ p {
   max-width: 52ch;
 }
 
+.service-body .service-details {
+  margin: 10px 0 4px 0;
+  padding-left: 18px;
+  list-style: disc;
+  font-size: 15px;
+  color: inherit;
+  line-height: 1.6;
+}
+
+.service-body .service-details li {
+  margin-bottom: 2px;
+}
+
 .service-body .tags {
   display: flex;
   flex-wrap: wrap;
