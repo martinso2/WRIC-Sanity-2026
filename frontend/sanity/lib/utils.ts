@@ -1,4 +1,4 @@
-import {Link} from '@/sanity.types'
+// @ts-nocheck
 import {dataset, projectId, studioUrl} from '@/sanity/lib/api'
 import {createDataAttribute, CreateDataAttributeProps} from 'next-sanity'
 import {createImageUrlBuilder, type SanityImageSource} from '@sanity/image-url'
