@@ -15,11 +15,11 @@ export default async function Page() {
 
   return (
     <WricOnePage
-      sanitySettings={settings}
-      sanityHero={hero}
-      sanityServices={services ?? []}
-      sanityStaff={staff ?? []}
-      sanityBoard={board ?? []}
+      sanitySettings={settings as any}
+      sanityHero={hero as any}
+      sanityServices={(services ?? []) as any[]}
+      sanityStaff={(staff ?? []) as any[]}
+      sanityBoard={(board ?? []) as any[]}
     />
   )
 }

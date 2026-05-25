@@ -170,7 +170,7 @@ export function WricOnePage({sanitySettings, sanityHero, sanityServices = [], sa
     phoneHref: `tel:+1${stegaClean(sanitySettings?.phone ?? contactDetails.phone).replace(/\D/g, '')}`,
     emailHref: `mailto:${stegaClean(sanitySettings?.email ?? contactDetails.email)}`,
   }
-  const mission = sanityHero?.missionStatement ?? sanitySettings?.missionStatement ?? missionStatement
+  const mission = sanityHero?.missionStatement ?? missionStatement
   const gala = {
     title: sanitySettings?.galaTitle ?? galaMessage.title,
     body: sanitySettings?.galaBody ?? galaMessage.body,
