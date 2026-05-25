@@ -35,6 +35,28 @@ export const wricService = defineType({
       initialValue: 'Get started',
     }),
     defineField({
+      name: 'actionType',
+      title: 'Button Action',
+      description: 'What happens when someone clicks the button',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Open intake form (default)', value: 'modal'},
+          {title: 'Send an email', value: 'email'},
+          {title: 'Go to a link / page', value: 'link'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'modal',
+    }),
+    defineField({
+      name: 'actionUrl',
+      title: 'Email address or URL',
+      description: 'For "Send an email": enter an email address (e.g. info@wric.org). For "Go to a link": enter the full URL (e.g. https://wric.org/apply).',
+      type: 'string',
+      hidden: ({parent}) => !parent?.actionType || parent?.actionType === 'modal',
+    }),
+    defineField({
       name: 'tags',
       title: 'Tags',
       description: 'Short labels shown under the summary (e.g. "Resume help", "ESL")',

@@ -54,6 +54,8 @@ type SanityService = {
   summary: string
   details?: string[] | null
   actionLabel?: string | null
+  actionType?: string | null
+  actionUrl?: string | null
   modalId?: string | null
   tags?: string[] | null
   image?: string | null
@@ -567,7 +569,10 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                             ))}
                           </ul>
                         )}
-                        <div className="tags">
+                        <div
+                          className="tags"
+                          {...(sanityItem ? {'data-sanity': dataAttr({id: sanityItem._id, type: 'wricService', path: 'tags'}).toString()} : {})}
+                        >
                           {(sanityItem?.tags ?? serviceTags[stegaClean(item.title)] ?? []).map((tag) => (
                             <span className="tag" key={tag}>
                               {tag}
@@ -575,16 +580,32 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                           ))}
                         </div>
                         <div className="actions">
-                          <button
-                            className="btn-text"
-                            onClick={() => openModal((item as SanityService).modalId ?? (item as ServiceCard).modalId)}
-                            type="button"
-                          >
-                          <span>{(item as SanityService).actionLabel ?? (item as ServiceCard).actionLabel}</span>
-                          <span aria-hidden="true" className="btn-cue">
-                            →
-                          </span>
-                          </button>
+                          {(() => {
+                            const actionType = (item as SanityService).actionType;
+                            const actionUrl = stegaClean((item as SanityService).actionUrl ?? '');
+                            const label = (item as SanityService).actionLabel ?? (item as ServiceCard).actionLabel;
+                            const dataAttrProp = sanityItem ? {'data-sanity': dataAttr({id: sanityItem._id, type: 'wricService', path: 'actionLabel'}).toString()} : {};
+                            const inner = (
+                              <>
+                                <span>{label}</span>
+                                <span aria-hidden="true" className="btn-cue">→</span>
+                              </>
+                            );
+                            if (actionType === 'email' && actionUrl) {
+                              return <a className="btn-text" href={`mailto:${actionUrl}`} {...dataAttrProp}>{inner}</a>;
+                            }
+                            if (actionType === 'link' && actionUrl) {
+                              return <a className="btn-text" href={actionUrl} target="_blank" rel="noopener noreferrer" {...dataAttrProp}>{inner}</a>;
+                            }
+                            return (
+                              <button
+                                className="btn-text"
+                                type="button"
+                                onClick={() => openModal((item as SanityService).modalId ?? (item as ServiceCard).modalId ?? 'intake')}
+                                {...dataAttrProp}
+                              >{inner}</button>
+                            );
+                          })()}
                         </div>
                       </div>
                     </article>

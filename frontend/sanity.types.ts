@@ -493,7 +493,7 @@ export type WricSettingsQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: wricServicesQuery
-// Query: *[_type == "wricService"] | order(order asc) {    _id, _type, title, summary, details, actionLabel, modalId, tags,    "image": image.asset->url,    "imageAlt": image.alt  }
+// Query: *[_type == "wricService"] | order(order asc) {    _id, _type, title, summary, details, actionLabel, actionType, actionUrl, modalId, tags,    "image": image.asset->url,    "imageAlt": image.alt  }
 export type WricServicesQueryResult = Array<{
   _id: string
   _type: 'wricService'
@@ -501,6 +501,8 @@ export type WricServicesQueryResult = Array<{
   summary: string
   details: Array<string> | null
   actionLabel: string | null
+  actionType: null
+  actionUrl: null
   modalId: string | null
   tags: Array<string> | null
   image: string | null
@@ -558,7 +560,7 @@ declare module '@sanity/client' {
     '\n  *[_type == "post" && defined(slug.current)]\n  {"slug": slug.current}\n': PostPagesSlugsResult
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
     '\n  *[_type == "wricSettings"][0]{\n    _id, _type,\n    orgName, tagline, missionStatement, heroLede, heroStat, heroStatLabel,\n    phone, phoneSpanish, email, address, hours, spanishHoursNote, taxNote,\n    donateUrl, volunteerUrl, orientationUrl, clientPortalUrl,\n    facebookUrl, instagramUrl, linkedinUrl,\n    galaTitle, galaBody, galaVisible\n  }\n': WricSettingsQueryResult
-    '\n  *[_type == "wricService"] | order(order asc) {\n    _id, _type, title, summary, details, actionLabel, modalId, tags,\n    "image": image.asset->url,\n    "imageAlt": image.alt\n  }\n': WricServicesQueryResult
+    '\n  *[_type == "wricService"] | order(order asc) {\n    _id, _type, title, summary, details, actionLabel, actionType, actionUrl, modalId, tags,\n    "image": image.asset->url,\n    "imageAlt": image.alt\n  }\n': WricServicesQueryResult
     '\n  *[_type == "wricStaffMember"] | order(order asc) {\n    _id, _type, name, title, email, featured,\n    "image": image.asset->url\n  }\n': WricStaffQueryResult
     '\n  *[_type == "wricBoardMember"] | order(order asc) {\n    _id, _type, name, role, isEmeritus\n  }\n': WricBoardQueryResult
     '\n  *[_type == "wricVideo"] | order(sortDate asc) {\n    _id, title, description, provider, embedUrl, externalUrl, dateLabel, sourcePage\n  }\n': WricVideosQueryResult
