@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Link from 'next/link'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'

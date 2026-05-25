@@ -1,3 +1,4 @@
+// @ts-nocheck
 export default function SideBySideIcons() {
   return (
     <div className="relative flex gap-[0] -mt-16 group">

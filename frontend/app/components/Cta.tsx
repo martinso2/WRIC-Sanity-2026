@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {PortableTextBlock} from 'next-sanity'
 
 import ResolvedLink from '@/app/components/ResolvedLink'

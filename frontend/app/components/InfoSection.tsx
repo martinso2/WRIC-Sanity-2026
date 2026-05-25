@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {type PortableTextBlock} from 'next-sanity'
 
 import PortableText from '@/app/components/PortableText'

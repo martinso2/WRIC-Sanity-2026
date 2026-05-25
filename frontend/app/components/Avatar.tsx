@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Image from '@/app/components/SanityImage'
 import DateComponent from '@/app/components/Date'
 

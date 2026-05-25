@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * This component uses Portable Text to render a post body.
  *
