@@ -85,5 +85,42 @@ export default defineConfig({
 
   schema: {
     types: schemaTypes,
+    templates: (prev) => [
+      // Keep all existing templates except the bare wricContentSection one
+      ...prev.filter((t) => t.id !== 'wricContentSection'),
+      {
+        id: 'content-section-image-right',
+        title: 'Content Section — Image on the Right',
+        schemaType: 'wricContentSection',
+        value: {
+          imagePosition: 'right',
+          ctaType: 'link',
+          order: 99,
+          visible: true,
+        },
+      },
+      {
+        id: 'content-section-image-left',
+        title: 'Content Section — Image on the Left',
+        schemaType: 'wricContentSection',
+        value: {
+          imagePosition: 'left',
+          ctaType: 'link',
+          order: 99,
+          visible: true,
+        },
+      },
+      {
+        id: 'content-section-no-image',
+        title: 'Content Section — Text Only (no image)',
+        schemaType: 'wricContentSection',
+        value: {
+          imagePosition: 'right',
+          ctaType: 'link',
+          order: 99,
+          visible: true,
+        },
+      },
+    ],
   },
 })
