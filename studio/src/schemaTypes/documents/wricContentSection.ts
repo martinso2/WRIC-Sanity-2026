@@ -29,7 +29,7 @@ export const wricContentSection = defineType({
     defineField({
       name: 'imagePosition',
       title: 'Image Position',
-      description: 'Which side of the section the image appears on',
+      description: 'Click to change which side of the section the image appears on',
       type: 'string',
       options: {
         list: [
@@ -70,7 +70,7 @@ export const wricContentSection = defineType({
     defineField({
       name: 'ctaType',
       title: 'Button Action',
-      description: 'What happens when someone clicks the button',
+      description: 'Click to change what happens when someone clicks the button',
       type: 'string',
       options: {
         list: [

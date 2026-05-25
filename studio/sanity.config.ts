@@ -99,6 +99,7 @@ export default defineConfig({
         title: 'Content Section — Image on the Right',
         schemaType: 'wricContentSection',
         value: {
+          internalTitle: 'New section (image right)',
           imagePosition: 'right',
           ctaType: 'link',
           order: 99,
@@ -110,6 +111,7 @@ export default defineConfig({
         title: 'Content Section — Image on the Left',
         schemaType: 'wricContentSection',
         value: {
+          internalTitle: 'New section (image left)',
           imagePosition: 'left',
           ctaType: 'link',
           order: 99,
@@ -121,6 +123,7 @@ export default defineConfig({
         title: 'Content Section — Text Only (no image)',
         schemaType: 'wricContentSection',
         value: {
+          internalTitle: 'New section (text only)',
           imagePosition: 'right',
           ctaType: 'link',
           order: 99,
