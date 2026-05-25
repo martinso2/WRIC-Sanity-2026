@@ -24,10 +24,6 @@ type SanitySettings = {
   _type?: string | null
   orgName?: string | null
   tagline?: string | null
-  missionStatement?: string | null
-  heroLede?: string | null
-  heroStat?: string | null
-  heroStatLabel?: string | null
   phone?: string | null
   phoneSpanish?: string | null
   email?: string | null
@@ -45,6 +41,20 @@ type SanitySettings = {
   galaTitle?: string | null
   galaBody?: string | null
   galaVisible?: boolean | null
+} | null
+
+type SanityHero = {
+  _id?: string | null
+  _type?: string | null
+  heroSubheadline?: string | null
+  heroLede?: string | null
+  heroStat?: string | null
+  heroStatLabel?: string | null
+  heroCTALabel?: string | null
+  heroCTAUrl?: string | null
+  missionStatement?: string | null
+  heroImage?: string | null
+  heroImageAlt?: string | null
 } | null
 
 type SanityService = {
@@ -82,6 +92,7 @@ type SanityBoard = {
 
 type Props = {
   sanitySettings?: SanitySettings
+  sanityHero?: SanityHero
   sanityServices?: SanityService[]
   sanityStaff?: SanityStaff[]
   sanityBoard?: SanityBoard[]
@@ -142,7 +153,7 @@ const serviceTags: Record<string, string[]> = {
 
 const rotatingHeroWords = ["Strength", "Stability", "Success"];
 
-export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = [], sanityBoard = []}: Props = {}) {
+export function WricOnePage({sanitySettings, sanityHero, sanityServices = [], sanityStaff = [], sanityBoard = []}: Props = {}) {
   // Merge Sanity data with static fallbacks
   const settingsId = stegaClean(sanitySettings?._id) ?? 'wricSettings'
   const settingsType = 'wricSettings'
@@ -159,7 +170,7 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
     phoneHref: `tel:+1${stegaClean(sanitySettings?.phone ?? contactDetails.phone).replace(/\D/g, '')}`,
     emailHref: `mailto:${stegaClean(sanitySettings?.email ?? contactDetails.email)}`,
   }
-  const mission = sanitySettings?.missionStatement ?? missionStatement
+  const mission = sanityHero?.missionStatement ?? sanitySettings?.missionStatement ?? missionStatement
   const gala = {
     title: sanitySettings?.galaTitle ?? galaMessage.title,
     body: sanitySettings?.galaBody ?? galaMessage.body,
@@ -167,9 +178,16 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
     modalId: galaMessage.modalId,
     visible: sanitySettings?.galaVisible ?? true,
   }
-  const heroStat = sanitySettings?.heroStat ?? '5,200+'
-  const heroStatLabel = sanitySettings?.heroStatLabel ?? 'people supported by WRIC programs last year across career, housing, and victim services.'
-  const heroLede = sanitySettings?.heroLede ?? 'For women and families navigating challenges in their lives.'
+  const heroId = sanityHero?._id ?? settingsId
+  const heroType = sanityHero?._type ?? 'wricHero'
+  const heroStat = sanityHero?.heroStat ?? '5,200+'
+  const heroStatLabel = sanityHero?.heroStatLabel ?? 'people supported by WRIC programs last year across career, housing, and victim services.'
+  const heroLede = sanityHero?.heroLede ?? 'Career services, housing support, victim services, and wellness programs. Safe, confidential, and tailored to your journey.'
+  const heroSubheadline = sanityHero?.heroSubheadline ?? 'For women and families navigating challenges in their lives.'
+  const heroCTALabel = sanityHero?.heroCTALabel ?? 'Get started with us'
+  const heroCTAUrl = stegaClean(sanityHero?.heroCTAUrl ?? '')
+  const heroImageSrc = sanityHero?.heroImage ?? importedImages.hero
+  const heroImageAlt = sanityHero?.heroImageAlt ?? 'Watercolor portraits of women in profile, layered in shades of blue and teal.'
 
   const [activeModalId, setActiveModalId] = useState<string | null>(null);
   const [heroWordIndex, setHeroWordIndex] = useState(0);
@@ -304,11 +322,11 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
           <section className="hero">
             <div className="hero-bg">
               <Image
-                alt="Watercolor portraits of women in profile, layered in shades of blue and teal."
+                alt={heroImageAlt}
                 fill
                 priority
                 sizes="100vw"
-                src={importedImages.hero}
+                src={heroImageSrc}
               />
             </div>
             <div className="hero-fade" />
@@ -316,8 +334,11 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
               <div className="hero-copy">
              
                 <h1 className="display h1">
-                <span className="sub-headline">
-                    For women and families navigating challenges in their lives.
+                <span
+                  className="sub-headline"
+                  {...(heroId ? {'data-sanity': dataAttr({id: heroId, type: heroType, path: 'heroSubheadline'}).toString()} : {})}
+                >
+                    {heroSubheadline}
                   </span>
                    Safety.
                   <br />
@@ -331,44 +352,46 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                   >
                     {rotatingHeroWords[heroWordIndex]}.
                   </span>
-                  {/* <span className="sub-headline">
-                    For women and families navigating challenges in their lives.
-                  </span> */}
                 </h1>
-                <p className="hero-lede">
-                  Career services,
-                  housing support, victim services, and wellness programs.
-                  Safe, confidential, and tailored to your journey.
+                <p
+                  className="hero-lede"
+                  {...(heroId ? {'data-sanity': dataAttr({id: heroId, type: heroType, path: 'heroLede'}).toString()} : {})}
+                >
+                  {heroLede}
                 </p>
                 <div className="hero-actions">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => openModal("intake")}
-                    type="button"
-                  >
-                    Get started with us
-                  </button>
-                  {/* <a className="phone-link" href={contact.phoneHref}>
-                    <span className="ico" aria-hidden="true">
-                      phone
-                    </span>
-                    <span>
-                      <strong>{contact.phone}</strong>
-                      <small>Call during business hours</small>
-                    </span>
-                  </a> */}
+                  {heroCTAUrl ? (
+                    <a
+                      className="btn btn-primary"
+                      href={heroCTAUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      {...(heroId ? {'data-sanity': dataAttr({id: heroId, type: heroType, path: 'heroCTALabel'}).toString()} : {})}
+                    >
+                      {heroCTALabel}
+                    </a>
+                  ) : (
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => openModal("intake")}
+                      type="button"
+                      {...(heroId ? {'data-sanity': dataAttr({id: heroId, type: heroType, path: 'heroCTALabel'}).toString()} : {})}
+                    >
+                      {heroCTALabel}
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="hero-stat">
                 <div
                   className="num"
-                  data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'heroStat'}).toString()}
+                  data-sanity={dataAttr({id: heroId, type: heroType, path: 'heroStat'}).toString()}
                 >
                   {heroStat}
                 </div>
                 <div
                   className="lbl"
-                  data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'heroStatLabel'}).toString()}
+                  data-sanity={dataAttr({id: heroId, type: heroType, path: 'heroStatLabel'}).toString()}
                 >
                   {heroStatLabel}
                 </div>
@@ -476,7 +499,7 @@ export function WricOnePage({sanitySettings, sanityServices = [], sanityStaff = 
                   </h2>
                   <p
                     className="body"
-                    data-sanity={dataAttr({id: settingsId, type: settingsType, path: 'missionStatement'}).toString()}
+                    data-sanity={dataAttr({id: heroId, type: heroType, path: 'missionStatement'}).toString()}
                   >
                     {mission}
                   </p>

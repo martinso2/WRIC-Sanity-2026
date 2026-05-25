@@ -37,13 +37,18 @@ export default defineConfig({
         mainDocuments: defineDocuments([
           {
             route: '/',
-            filter: `_type == "wricSettings"`,
+            filter: `_type == "wricSettings" || _type == "wricHero"`,
           },
         ]),
         locations: {
           wricSettings: defineLocations({
             locations: [homeLocation],
             message: 'Controls site-wide content on the homepage',
+            tone: 'positive',
+          }),
+          wricHero: defineLocations({
+            locations: [homeLocation],
+            message: 'Controls the hero section on the homepage',
             tone: 'positive',
           }),
           wricService: defineLocations({

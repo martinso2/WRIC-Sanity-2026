@@ -1,4 +1,5 @@
 import {wricSettings} from './singletons/wricSettings'
+import {wricHero} from './singletons/wricHero'
 import {wricService} from './documents/wricService'
 import {wricStaffMember} from './documents/wricStaffMember'
 import {wricBoardMember} from './documents/wricBoardMember'
@@ -9,6 +10,7 @@ import {wricVideo} from './documents/wricVideo'
 export const schemaTypes = [
   // Singletons
   wricSettings,
+  wricHero,
   // Documents
   wricService,
   wricStaffMember,

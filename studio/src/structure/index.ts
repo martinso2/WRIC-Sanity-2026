@@ -1,4 +1,4 @@
-import {CogIcon, UsersIcon, BlockElementIcon, ImagesIcon, StarIcon} from '@sanity/icons'
+import {CogIcon, UsersIcon, BlockElementIcon, ImagesIcon, StarIcon, ImageIcon} from '@sanity/icons'
 import type {StructureBuilder, StructureResolver} from 'sanity/structure'
 
 export const structure: StructureResolver = (S: StructureBuilder) =>
@@ -9,6 +9,10 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
         .title('Site Settings')
         .icon(CogIcon)
         .child(S.document().schemaType('wricSettings').documentId('wricSettings')),
+      S.listItem()
+        .title('Hero Section')
+        .icon(ImageIcon)
+        .child(S.document().schemaType('wricHero').documentId('wricHero')),
       S.divider(),
       S.listItem()
         .title('Services')

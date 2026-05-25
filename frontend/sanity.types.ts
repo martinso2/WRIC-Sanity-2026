@@ -21,10 +21,10 @@ export type WricVideo = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  title: string
+  title?: string
   description?: string
-  provider: 'youtube' | 'vimeo'
-  embedUrl: string
+  provider?: 'youtube' | 'vimeo'
+  embedUrl?: string
   externalUrl?: string
   dateLabel?: string
   sortDate?: string
@@ -37,7 +37,7 @@ export type WricBoardMember = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  name: string
+  name?: string
   role?: string
   isEmeritus?: boolean
   order?: number
@@ -56,7 +56,7 @@ export type WricStaffMember = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  name: string
+  name?: string
   title?: string
   email?: string
   image?: {
@@ -73,18 +73,18 @@ export type WricStaffMember = {
 
 export type SanityImageCrop = {
   _type: 'sanity.imageCrop'
-  top: number
-  bottom: number
-  left: number
-  right: number
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
 }
 
 export type SanityImageHotspot = {
   _type: 'sanity.imageHotspot'
-  x: number
-  y: number
-  height: number
-  width: number
+  x?: number
+  y?: number
+  height?: number
+  width?: number
 }
 
 export type WricService = {
@@ -93,11 +93,12 @@ export type WricService = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  title: string
-  summary: string
+  title?: string
+  summary?: string
   details?: Array<string>
   actionLabel?: string
-  modalId?: string
+  actionType?: 'modal' | 'email' | 'link'
+  actionUrl?: string
   tags?: Array<string>
   image?: {
     asset?: SanityImageAssetReference
@@ -108,6 +109,30 @@ export type WricService = {
     _type: 'image'
   }
   order?: number
+  modalId?: string
+}
+
+export type WricHero = {
+  _id: string
+  _type: 'wricHero'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  heroImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  heroSubheadline?: string
+  heroLede?: string
+  heroStat?: string
+  heroStatLabel?: string
+  heroCTALabel?: string
+  heroCTAUrl?: string
+  missionStatement?: string
 }
 
 export type WricSettings = {
@@ -133,10 +158,6 @@ export type WricSettings = {
     crop?: SanityImageCrop
     _type: 'image'
   }
-  missionStatement?: string
-  heroStat?: string
-  heroStatLabel?: string
-  heroLede?: string
   facebookUrl?: string
   instagramUrl?: string
   linkedinUrl?: string
@@ -195,7 +216,7 @@ export type AssistInstructionContextReference = {
 
 export type SanityAssistInstructionContext = {
   _type: 'sanity.assist.instruction.context'
-  reference: AssistInstructionContextReference
+  reference?: AssistInstructionContextReference
 }
 
 export type AssistInstructionContext = {
@@ -223,7 +244,7 @@ export type AssistInstructionContext = {
 
 export type SanityAssistInstructionUserInput = {
   _type: 'sanity.assist.instruction.userInput'
-  message: string
+  message?: string
   description?: string
 }
 
@@ -306,9 +327,9 @@ export type SanityImagePalette = {
 
 export type SanityImageDimensions = {
   _type: 'sanity.imageDimensions'
-  height: number
-  width: number
-  aspectRatio: number
+  height?: number
+  width?: number
+  aspectRatio?: number
 }
 
 export type SanityImageMetadata = {
@@ -334,14 +355,14 @@ export type SanityFileAsset = {
   title?: string
   description?: string
   altText?: string
-  sha1hash: string
-  extension: string
-  mimeType: string
-  size: number
-  assetId: string
+  sha1hash?: string
+  extension?: string
+  mimeType?: string
+  size?: number
+  assetId?: string
   uploadId?: string
-  path: string
-  url: string
+  path?: string
+  url?: string
   source?: SanityAssetSourceData
 }
 
@@ -363,14 +384,14 @@ export type SanityImageAsset = {
   title?: string
   description?: string
   altText?: string
-  sha1hash: string
-  extension: string
-  mimeType: string
-  size: number
-  assetId: string
+  sha1hash?: string
+  extension?: string
+  mimeType?: string
+  size?: number
+  assetId?: string
   uploadId?: string
-  path: string
-  url: string
+  path?: string
+  url?: string
   metadata?: SanityImageMetadata
   source?: SanityAssetSourceData
 }
@@ -384,7 +405,7 @@ export type Geopoint = {
 
 export type Slug = {
   _type: 'slug'
-  current: string
+  current?: string
   source?: string
 }
 
@@ -396,6 +417,7 @@ export type AllSanitySchemaTypes =
   | SanityImageCrop
   | SanityImageHotspot
   | WricService
+  | WricHero
   | WricSettings
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
@@ -462,16 +484,12 @@ export type PagesSlugsResult = Array<never>
 
 // Source: sanity/lib/queries.ts
 // Variable: wricSettingsQuery
-// Query: *[_type == "wricSettings"][0]{    _id, _type,    orgName, tagline, missionStatement, heroLede, heroStat, heroStatLabel,    phone, phoneSpanish, email, address, hours, spanishHoursNote, taxNote,    donateUrl, volunteerUrl, orientationUrl, clientPortalUrl,    facebookUrl, instagramUrl, linkedinUrl,    galaTitle, galaBody, galaVisible  }
+// Query: *[_type == "wricSettings"][0]{    _id, _type,    orgName, tagline,    phone, phoneSpanish, email, address, hours, spanishHoursNote, taxNote,    donateUrl, volunteerUrl, orientationUrl, clientPortalUrl,    facebookUrl, instagramUrl, linkedinUrl,    galaTitle, galaBody, galaVisible  }
 export type WricSettingsQueryResult = {
   _id: string
   _type: 'wricSettings'
   orgName: string | null
   tagline: string | null
-  missionStatement: string | null
-  heroLede: string | null
-  heroStat: string | null
-  heroStatLabel: string | null
   phone: string | null
   phoneSpanish: string | null
   email: string | null
@@ -492,17 +510,34 @@ export type WricSettingsQueryResult = {
 } | null
 
 // Source: sanity/lib/queries.ts
+// Variable: wricHeroQuery
+// Query: *[_type == "wricHero"][0]{    _id, _type,    heroSubheadline, heroLede, heroStat, heroStatLabel,    heroCTALabel, heroCTAUrl, missionStatement,    "heroImage": heroImage.asset->url,    "heroImageAlt": heroImage.alt  }
+export type WricHeroQueryResult = {
+  _id: string
+  _type: 'wricHero'
+  heroSubheadline: string | null
+  heroLede: string | null
+  heroStat: string | null
+  heroStatLabel: string | null
+  heroCTALabel: string | null
+  heroCTAUrl: string | null
+  missionStatement: string | null
+  heroImage: string | null
+  heroImageAlt: string | null
+} | null
+
+// Source: sanity/lib/queries.ts
 // Variable: wricServicesQuery
 // Query: *[_type == "wricService"] | order(order asc) {    _id, _type, title, summary, details, actionLabel, actionType, actionUrl, modalId, tags,    "image": image.asset->url,    "imageAlt": image.alt  }
 export type WricServicesQueryResult = Array<{
   _id: string
   _type: 'wricService'
-  title: string
-  summary: string
+  title: string | null
+  summary: string | null
   details: Array<string> | null
   actionLabel: string | null
-  actionType: null
-  actionUrl: null
+  actionType: 'email' | 'link' | 'modal' | null
+  actionUrl: string | null
   modalId: string | null
   tags: Array<string> | null
   image: string | null
@@ -515,7 +550,7 @@ export type WricServicesQueryResult = Array<{
 export type WricStaffQueryResult = Array<{
   _id: string
   _type: 'wricStaffMember'
-  name: string
+  name: string | null
   title: string | null
   email: string | null
   featured: boolean | null
@@ -528,7 +563,7 @@ export type WricStaffQueryResult = Array<{
 export type WricBoardQueryResult = Array<{
   _id: string
   _type: 'wricBoardMember'
-  name: string
+  name: string | null
   role: string | null
   isEmeritus: boolean | null
 }>
@@ -538,10 +573,10 @@ export type WricBoardQueryResult = Array<{
 // Query: *[_type == "wricVideo"] | order(sortDate asc) {    _id, title, description, provider, embedUrl, externalUrl, dateLabel, sourcePage  }
 export type WricVideosQueryResult = Array<{
   _id: string
-  title: string
+  title: string | null
   description: string | null
-  provider: 'vimeo' | 'youtube'
-  embedUrl: string
+  provider: 'vimeo' | 'youtube' | null
+  embedUrl: string | null
   externalUrl: string | null
   dateLabel: string | null
   sourcePage: string | null
@@ -559,7 +594,8 @@ declare module '@sanity/client' {
     '\n  *[_type == "post" && slug.current == $slug] [0] {\n    content[]{\n    ...,\n    markDefs[]{\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n    }\n  },\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': PostQueryResult
     '\n  *[_type == "post" && defined(slug.current)]\n  {"slug": slug.current}\n': PostPagesSlugsResult
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
-    '\n  *[_type == "wricSettings"][0]{\n    _id, _type,\n    orgName, tagline, missionStatement, heroLede, heroStat, heroStatLabel,\n    phone, phoneSpanish, email, address, hours, spanishHoursNote, taxNote,\n    donateUrl, volunteerUrl, orientationUrl, clientPortalUrl,\n    facebookUrl, instagramUrl, linkedinUrl,\n    galaTitle, galaBody, galaVisible\n  }\n': WricSettingsQueryResult
+    '\n  *[_type == "wricSettings"][0]{\n    _id, _type,\n    orgName, tagline,\n    phone, phoneSpanish, email, address, hours, spanishHoursNote, taxNote,\n    donateUrl, volunteerUrl, orientationUrl, clientPortalUrl,\n    facebookUrl, instagramUrl, linkedinUrl,\n    galaTitle, galaBody, galaVisible\n  }\n': WricSettingsQueryResult
+    '\n  *[_type == "wricHero"][0]{\n    _id, _type,\n    heroSubheadline, heroLede, heroStat, heroStatLabel,\n    heroCTALabel, heroCTAUrl, missionStatement,\n    "heroImage": heroImage.asset->url,\n    "heroImageAlt": heroImage.alt\n  }\n': WricHeroQueryResult
     '\n  *[_type == "wricService"] | order(order asc) {\n    _id, _type, title, summary, details, actionLabel, actionType, actionUrl, modalId, tags,\n    "image": image.asset->url,\n    "imageAlt": image.alt\n  }\n': WricServicesQueryResult
     '\n  *[_type == "wricStaffMember"] | order(order asc) {\n    _id, _type, name, title, email, featured,\n    "image": image.asset->url\n  }\n': WricStaffQueryResult
     '\n  *[_type == "wricBoardMember"] | order(order asc) {\n    _id, _type, name, role, isEmeritus\n  }\n': WricBoardQueryResult

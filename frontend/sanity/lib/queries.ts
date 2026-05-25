@@ -104,11 +104,21 @@ export const pagesSlugs = defineQuery(`
 export const wricSettingsQuery = defineQuery(`
   *[_type == "wricSettings"][0]{
     _id, _type,
-    orgName, tagline, missionStatement, heroLede, heroStat, heroStatLabel,
+    orgName, tagline,
     phone, phoneSpanish, email, address, hours, spanishHoursNote, taxNote,
     donateUrl, volunteerUrl, orientationUrl, clientPortalUrl,
     facebookUrl, instagramUrl, linkedinUrl,
     galaTitle, galaBody, galaVisible
+  }
+`)
+
+export const wricHeroQuery = defineQuery(`
+  *[_type == "wricHero"][0]{
+    _id, _type,
+    heroSubheadline, heroLede, heroStat, heroStatLabel,
+    heroCTALabel, heroCTAUrl, missionStatement,
+    "heroImage": heroImage.asset->url,
+    "heroImageAlt": heroImage.alt
   }
 `)
 

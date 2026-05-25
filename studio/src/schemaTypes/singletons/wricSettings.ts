@@ -9,7 +9,6 @@ export const wricSettings = defineType({
   groups: [
     {name: 'contact', title: 'Contact & Hours', default: true},
     {name: 'gala', title: 'Event / Gala'},
-    {name: 'mission', title: 'Mission & Hero'},
     {name: 'social', title: 'Social & Links'},
   ],
   fields: [
@@ -87,36 +86,6 @@ export const wricSettings = defineType({
       type: 'image',
       options: {hotspot: true},
       group: 'gala',
-    }),
-
-    // ── Mission & Hero ────────────────────────────────────────────────
-    defineField({
-      name: 'missionStatement',
-      title: 'Mission Statement',
-      type: 'text',
-      rows: 4,
-      group: 'mission',
-    }),
-    defineField({
-      name: 'heroStat',
-      title: 'Hero Impact Number',
-      description: 'e.g. "5,200+"',
-      type: 'string',
-      group: 'mission',
-    }),
-    defineField({
-      name: 'heroStatLabel',
-      title: 'Hero Stat Label',
-      description: 'e.g. "people supported last year"',
-      type: 'string',
-      group: 'mission',
-    }),
-    defineField({
-      name: 'heroLede',
-      title: 'Hero Sub-headline',
-      description: 'Short sentence shown below the main hero headline',
-      type: 'string',
-      group: 'mission',
     }),
 
     // ── Social & Links ────────────────────────────────────────────────
