@@ -2,7 +2,7 @@
   "name": "frontend",
   "private": true,
   "scripts": {
-    "prebuild": "sanity typegen generate",
+    "prebuild": "node -e \"if(!process.env.VERCEL) require('child_process').execSync('sanity typegen generate', {stdio:'inherit'})\"",
     "build": "next build",
     "predev": "npm run sanity:typegen",
     "dev": "next dev",
