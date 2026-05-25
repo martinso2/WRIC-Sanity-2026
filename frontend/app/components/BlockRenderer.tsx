@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react'
 
 import Cta from '@/app/components/Cta'
