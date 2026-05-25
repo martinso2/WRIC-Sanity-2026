@@ -151,6 +151,16 @@ export const wricBoardQuery = defineQuery(`
   }
 `)
 
+export const wricContentSectionsQuery = defineQuery(`
+  *[_type == "wricContentSection" && visible == true] | order(order asc) {
+    _id, _type,
+    internalTitle, headline, subheading, body,
+    imagePosition, ctaLabel, ctaType, ctaUrl,
+    "image": image.asset->url,
+    "imageAlt": image.alt
+  }
+`)
+
 export const wricVideosQuery = defineQuery(`
   *[_type == "wricVideo"] | order(sortDate asc) {
     _id, title, description, provider, embedUrl, externalUrl, dateLabel, sourcePage

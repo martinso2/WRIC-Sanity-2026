@@ -87,6 +87,32 @@ export type SanityImageHotspot = {
   width?: number
 }
 
+export type WricContentSection = {
+  _id: string
+  _type: 'wricContentSection'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  internalTitle?: string
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  imagePosition?: 'right' | 'left'
+  headline?: string
+  subheading?: string
+  body?: string
+  ctaLabel?: string
+  ctaType?: 'modal' | 'email' | 'link'
+  ctaUrl?: string
+  order?: number
+  visible?: boolean
+}
+
 export type WricService = {
   _id: string
   _type: 'wricService'
@@ -433,6 +459,7 @@ export type AllSanitySchemaTypes =
   | WricStaffMember
   | SanityImageCrop
   | SanityImageHotspot
+  | WricContentSection
   | WricService
   | WricMission
   | WricHero
@@ -604,6 +631,24 @@ export type WricBoardQueryResult = Array<{
 }>
 
 // Source: sanity/lib/queries.ts
+// Variable: wricContentSectionsQuery
+// Query: *[_type == "wricContentSection" && visible == true] | order(order asc) {    _id, _type,    internalTitle, headline, subheading, body,    imagePosition, ctaLabel, ctaType, ctaUrl,    "image": image.asset->url,    "imageAlt": image.alt  }
+export type WricContentSectionsQueryResult = Array<{
+  _id: string
+  _type: 'wricContentSection'
+  internalTitle: string | null
+  headline: string | null
+  subheading: string | null
+  body: string | null
+  imagePosition: 'left' | 'right' | null
+  ctaLabel: string | null
+  ctaType: 'email' | 'link' | 'modal' | null
+  ctaUrl: string | null
+  image: string | null
+  imageAlt: string | null
+}>
+
+// Source: sanity/lib/queries.ts
 // Variable: wricVideosQuery
 // Query: *[_type == "wricVideo"] | order(sortDate asc) {    _id, title, description, provider, embedUrl, externalUrl, dateLabel, sourcePage  }
 export type WricVideosQueryResult = Array<{
@@ -635,6 +680,7 @@ declare module '@sanity/client' {
     '\n  *[_type == "wricService"] | order(order asc) {\n    _id, _type, title, summary, details, actionLabel, actionType, actionUrl, modalId, tags,\n    "image": image.asset->url,\n    "imageAlt": image.alt\n  }\n': WricServicesQueryResult
     '\n  *[_type == "wricStaffMember"] | order(order asc) {\n    _id, _type, name, title, email, featured,\n    "image": image.asset->url\n  }\n': WricStaffQueryResult
     '\n  *[_type == "wricBoardMember"] | order(order asc) {\n    _id, _type, name, role, isEmeritus\n  }\n': WricBoardQueryResult
+    '\n  *[_type == "wricContentSection" && visible == true] | order(order asc) {\n    _id, _type,\n    internalTitle, headline, subheading, body,\n    imagePosition, ctaLabel, ctaType, ctaUrl,\n    "image": image.asset->url,\n    "imageAlt": image.alt\n  }\n': WricContentSectionsQueryResult
     '\n  *[_type == "wricVideo"] | order(sortDate asc) {\n    _id, title, description, provider, embedUrl, externalUrl, dateLabel, sourcePage\n  }\n': WricVideosQueryResult
   }
 }

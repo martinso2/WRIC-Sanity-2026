@@ -71,6 +71,21 @@ type SanityMission = {
   stat3Label?: string | null
 } | null
 
+type SanityContentSection = {
+  _id: string
+  _type?: string | null
+  internalTitle?: string | null
+  headline?: string | null
+  subheading?: string | null
+  body?: string | null
+  imagePosition?: string | null
+  ctaLabel?: string | null
+  ctaType?: string | null
+  ctaUrl?: string | null
+  image?: string | null
+  imageAlt?: string | null
+}
+
 type SanityService = {
   _id: string
   _type?: string | null
@@ -108,6 +123,7 @@ type Props = {
   sanitySettings?: SanitySettings
   sanityHero?: SanityHero
   sanityMission?: SanityMission
+  sanityContentSections?: SanityContentSection[]
   sanityServices?: SanityService[]
   sanityStaff?: SanityStaff[]
   sanityBoard?: SanityBoard[]
@@ -168,7 +184,7 @@ const serviceTags: Record<string, string[]> = {
 
 const rotatingHeroWords = ["Strength", "Stability", "Success"];
 
-export function WricOnePage({sanitySettings, sanityHero, sanityMission, sanityServices = [], sanityStaff = [], sanityBoard = []}: Props = {}) {
+export function WricOnePage({sanitySettings, sanityHero, sanityMission, sanityContentSections = [], sanityServices = [], sanityStaff = [], sanityBoard = []}: Props = {}) {
   // Merge Sanity data with static fallbacks
   const settingsId = stegaClean(sanitySettings?._id) ?? 'wricSettings'
   const settingsType = 'wricSettings'
@@ -546,6 +562,74 @@ export function WricOnePage({sanitySettings, sanityHero, sanityMission, sanitySe
               </div>
             </div>
           </section>
+
+          {sanityContentSections.length > 0 && sanityContentSections.map((cs) => {
+            const imageRight = (cs.imagePosition ?? 'right') === 'right'
+            const ctaUrl = stegaClean(cs.ctaUrl ?? '')
+            return (
+              <section key={cs._id} className="content-section">
+                <div className="wrap">
+                  <div className={`content-section-grid${imageRight ? '' : ' image-left'}`}>
+                    <div className="content-section-body">
+                      {cs.subheading && (
+                        <span
+                          className="kicker"
+                          {...({'data-sanity': dataAttr({id: cs._id, type: 'wricContentSection', path: 'subheading'}).toString()})}
+                        >
+                          {cs.subheading}
+                        </span>
+                      )}
+                      {cs.headline && (
+                        <h2
+                          className="display h2"
+                          {...({'data-sanity': dataAttr({id: cs._id, type: 'wricContentSection', path: 'headline'}).toString()})}
+                        >
+                          {cs.headline}
+                        </h2>
+                      )}
+                      {cs.body && (
+                        <p
+                          className="body"
+                          {...({'data-sanity': dataAttr({id: cs._id, type: 'wricContentSection', path: 'body'}).toString()})}
+                        >
+                          {cs.body}
+                        </p>
+                      )}
+                      {cs.ctaLabel && (
+                        <div className="content-section-actions">
+                          {cs.ctaType === 'email' && ctaUrl ? (
+                            <a className="btn btn-primary" href={`mailto:${ctaUrl}`}
+                              {...({'data-sanity': dataAttr({id: cs._id, type: 'wricContentSection', path: 'ctaLabel'}).toString()})}
+                            >{cs.ctaLabel}</a>
+                          ) : cs.ctaType === 'link' && ctaUrl ? (
+                            <a className="btn btn-primary" href={ctaUrl} target="_blank" rel="noopener noreferrer"
+                              {...({'data-sanity': dataAttr({id: cs._id, type: 'wricContentSection', path: 'ctaLabel'}).toString()})}
+                            >{cs.ctaLabel}</a>
+                          ) : (
+                            <button className="btn btn-primary" type="button" onClick={() => openModal('intake')}
+                              {...({'data-sanity': dataAttr({id: cs._id, type: 'wricContentSection', path: 'ctaLabel'}).toString()})}
+                            >{cs.ctaLabel}</button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {cs.image && (
+                      <div className="content-section-img">
+                        <Image
+                          src={cs.image}
+                          alt={cs.imageAlt ?? cs.headline ?? ''}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          style={{objectFit: 'cover'}}
+                          {...({'data-sanity': dataAttr({id: cs._id, type: 'wricContentSection', path: 'image'}).toString()})}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </section>
+            )
+          })}
 
           <section className="services" id="services" aria-labelledby="services-title">
             <div className="wrap">
