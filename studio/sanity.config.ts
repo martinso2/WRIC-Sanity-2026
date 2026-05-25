@@ -30,20 +30,6 @@ const homeLocation = {
   href: '/',
 } satisfies DocumentLocation
 
-// resolveHref() is a convenience function that resolves the URL
-// path for different document types and used in the presentation tool.
-function resolveHref(documentType?: string, slug?: string): string | undefined {
-  switch (documentType) {
-    case 'post':
-      return slug ? `/posts/${slug}` : undefined
-    case 'page':
-      return slug ? `/${slug}` : undefined
-    default:
-      console.warn('Invalid document type:', documentType)
-      return undefined
-  }
-}
-
 // Main Sanity configuration
 export default defineConfig({
   name: 'default',
@@ -62,59 +48,29 @@ export default defineConfig({
         },
       },
       resolve: {
-        // The Main Document Resolver API provides a method of resolving a main document from a given route or route pattern. https://www.sanity.io/docs/visual-editing/presentation-resolver-api#57720a5678d9
         mainDocuments: defineDocuments([
           {
             route: '/',
-            filter: `_type == "settings" && _id == "siteSettings"`,
-          },
-          {
-            route: '/:slug',
-            filter: `_type == "page" && slug.current == $slug || _id == $slug`,
-          },
-          {
-            route: '/posts/:slug',
-            filter: `_type == "post" && slug.current == $slug || _id == $slug`,
+            filter: `_type == "wricSettings"`,
           },
         ]),
-        // Locations Resolver API allows you to define where data is being used in your application. https://www.sanity.io/docs/visual-editing/presentation-resolver-api#8d8bca7bfcd7
         locations: {
-          settings: defineLocations({
+          wricSettings: defineLocations({
             locations: [homeLocation],
-            message: 'This document is used on all pages',
+            message: 'This document controls site-wide settings',
             tone: 'positive',
           }),
-          page: defineLocations({
-            select: {
-              name: 'name',
-              slug: 'slug.current',
-            },
-            resolve: (doc) => ({
-              locations: [
-                {
-                  title: doc?.name || 'Untitled',
-                  href: resolveHref('page', doc?.slug)!,
-                },
-              ],
-            }),
+          wricService: defineLocations({
+            select: {title: 'title'},
+            resolve: () => ({locations: [homeLocation]}),
           }),
-          post: defineLocations({
-            select: {
-              title: 'title',
-              slug: 'slug.current',
-            },
-            resolve: (doc) => ({
-              locations: [
-                {
-                  title: doc?.title || 'Untitled',
-                  href: resolveHref('post', doc?.slug)!,
-                },
-                {
-                  title: 'Home',
-                  href: '/',
-                } satisfies DocumentLocation,
-              ].filter(Boolean) as DocumentLocation[],
-            }),
+          wricStaffMember: defineLocations({
+            select: {title: 'name'},
+            resolve: () => ({locations: [homeLocation]}),
+          }),
+          wricBoardMember: defineLocations({
+            select: {title: 'name'},
+            resolve: () => ({locations: [homeLocation]}),
           }),
         },
       },
