@@ -114,6 +114,17 @@ export const wricContentSection = defineType({
     },
   ],
   preview: {
-    select: {title: 'internalTitle', subtitle: 'headline', media: 'image'},
+    select: {
+      internalTitle: 'internalTitle',
+      headline: 'headline',
+      media: 'image',
+    },
+    prepare({internalTitle, headline, media}) {
+      return {
+        title: internalTitle || headline || 'Untitled section',
+        subtitle: headline && internalTitle ? headline : undefined,
+        media,
+      }
+    },
   },
 })
