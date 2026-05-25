@@ -43,12 +43,8 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       </head>
       <body>
         <Toaster />
-        {isDraftMode && (
-          <>
-            <DraftModeToast />
-            <VisualEditing />
-          </>
-        )}
+        {isDraftMode && <DraftModeToast />}
+        <VisualEditing />
         <SanityLive onError={handleError} />
         {children}
       </body>
